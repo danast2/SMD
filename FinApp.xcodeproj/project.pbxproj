@@ -52,6 +52,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 303F9ABC2DF36B7C00E2DB56 /* Build configuration list for PBXNativeTarget "FinApp" */;
 			buildPhases = (
+				303F9ABF2DF376BD00E2DB56 /* ShellScript */,
 				303F9AAD2DF36B7B00E2DB56 /* Sources */,
 				303F9AAE2DF36B7B00E2DB56 /* Frameworks */,
 				303F9AAF2DF36B7B00E2DB56 /* Resources */,
@@ -113,6 +114,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		303F9ABF2DF376BD00E2DB56 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 12;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint; then\n  printf \"\\033[1;33mЗапуск SwiftLint...\\033[0m\\n\"\n  swiftlint\n  printf \"\\033[1;32mГотово!\\033[0m\\n\"\nelse\n  printf \"\\033[1;31mSwiftLint не найден!\\033[0m\\n\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		303F9AAD2DF36B7B00E2DB56 /* Sources */ = {

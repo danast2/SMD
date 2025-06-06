@@ -1,0 +1,140 @@
+# Включает проверку только в указанных директориях
+included:
+  - FinApp  # Основная папка с кодом проекта
+
+# Исключает указанные папки из проверки
+excluded:
+  - Targets/Proto/Impl          # Сгенерированные protobuf-файлы
+  - Targets/ProtoExtranet/Impl  # Сгенерированные protobuf-файлы для Extranet
+  - Tuist/Dependencies          # Зависимости Tuist
+  - XcodeTemplates              # Шаблоны Xcode
+  - DesignSystem                # Дизайн-система
+  - Scripts                     # Скрипты сборки
+  - Dependencies/BottomSheet    # Зависимость BottomSheet
+  - Derived                     # Сгенерированные файлы (DerivedData)
+
+# Включает дополнительные правила (по умолчанию отключенные в SwiftLint)
+opt_in_rules:
+  - explicit_init                # Требует явного указания .init()
+  - force_unwrapping             # Запрещает force-unwrap (!)
+  - first_where                  # Рекомендует first(where:) вместо filter.first
+  - last_where                   # Рекомендует last(where:) вместо filter.last
+  - private_swiftui_state        # Требует private для @State переменных
+  - unowned_variable_capture     # Требует явного указания weak/unowned в замыканиях
+  - xct_specific_matcher         # Рекомендует специфичные матчеры XCTest
+  - unavailable_function         # Проверяет @available(*, unavailable)
+  - trailing_closure             # Проверяет trailing closure syntax
+  - toggle_bool                  # Рекомендует !value вместо value.toggle()
+  - single_test_class            # Один тест-класс на файл
+  - return_value_from_void_function # Проверяет возвращаемые значения в void-функциях
+  - redundant_type_annotation    # Запрещает избыточные аннотации типов
+  - redundant_self_in_closure    # Запрещает избыточные self в замыканиях
+  - redundant_nil_coalescing     # Запрещает избыточные ??
+  - prohibited_super_call        # Запрещает вызовы super в определенных методах
+  - prefer_self_type_over_type_of_self # Рекомендует Self вместо type(of: self)
+  - overridden_super_call        # Проверяет вызовы super в override методах
+  - optional_enum_case_matching  # Оптимизирует matching optional enum cases
+  - multiline_function_chains    # Форматирование цепочек вызовов
+  - let_var_whitespace          # Проверяет пробелы вокруг let/var
+  - file_name_no_space          # Запрещает пробелы в именах файлов
+  - fallthrough                 # Контролирует использование fallthrough
+  - enum_case_associated_values_count # Лимит ассоциированных значений enum
+  - empty_xctest_method         # Запрещает пустые XCTest методы
+  - empty_string                # Проверяет инициализацию пустых строк
+  - empty_count                 # Рекомендует isEmpty вместо count == 0
+  - empty_collection_literal    # Проверяет пустые коллекции
+  - direct_return               # Рекомендует прямой return
+  - convenience_type            # Контролирует convenience инициализаторы
+  - contains_over_filter_is_empty # Рекомендует contains вместо filter.isEmpty
+  - contains_over_first_not_nil # Рекомендует contains вместо first != nil
+
+# Настройка правила empty_count (проверка .count == 0)
+empty_count:
+  only_after_dot: true  # Проверяет только выражения вида array.count == 0
+
+# Включает экспериментальные analyzer правила
+analyzer_rules:
+  - unused_import  # Помечает неиспользуемые импорты
+
+# Отключает конкретные правила SwiftLint
+disabled_rules:
+  - weak_delegate              # Разрешает weak delegate без явного указания
+  - class_delegate_protocol    # Разрешает class-протоколы для делегатов
+  - trailing_comma             # Разрешает trailing запятые в коллекциях
+  - blanket_disable_command    # Разрешает blanket-отключения правил
+  - line_length                # Отключает проверку длины строки
+  - redundant_optional_initialization # Разрешает var x: Int? = nil
+
+# Настройки сложности кода (cyclomatic complexity)
+cyclomatic_complexity:
+  warning: 12   # Предупреждение при сложности >12
+  error: 999    # Ошибка (фактически отключено)
+  ignores_case_statements: true  # Игнорирует case в switch
+
+# Максимальная длина тела функции
+function_body_length: 80  # 80 строк
+
+# Настройки имен типов
+type_name:
+  allowed_symbols:  # Разрешенные символы в именах типов
+    - _             # Подчеркивание разрешено
+  excluded:         # Исключения из проверки
+    - ID            # Тип ID (например, из Tagged)
+    - S             # Typealias S для State из Store
+
+# Настройки имен переменных и функций
+identifier_name:
+  excluded:         # Короткие имена, которые разрешены
+    - ad            # Разные общепринятые сокращения
+    - at
+    - by
+    - db
+    - di
+    - dx            # delta x
+    - dy            # delta y
+    - i             # Индексы
+    - id            # Идентификатор
+    - j
+    - no
+    - ok
+    - on
+    - op            # Operation
+    - pk            # Primary Key
+    - to
+    - ui
+    - vc            # ViewController
+    - vm            # ViewModel
+    - x
+    - y
+    - isRequestForNotificationInContextEligible  # Слишком длинное имя
+  allowed_symbols:  # Разрешенные символы
+    - _             # Подчеркивание
+
+# Настройки количества параметров функции
+function_parameter_count:
+  warning: 5         # Предупреждение при >5 параметров
+  error: 999         # Ошибка (фактически отключено)
+  ignores_default_parameters: false  # Учитывает параметры по умолчанию
+
+# Настройки для кортежей
+large_tuple:
+  warning: 2  # Предупреждение при кортежах из >2 элементов
+  error: 999  # Ошибка (фактически отключено)
+
+# Настройки trailing closures
+trailing_closure:
+  only_single_muted_parameter: true  # Разрешает только для замыканий без параметров
+
+# Настройки ассоциированных значений enum
+enum_case_associated_values_count:
+  warning: 5  # Предупреждение при >5 значений
+  error: 999  # Ошибка (фактически отключено)
+
+# Настройки вложенности типов
+nesting:
+  type_level:
+    warning: 3  # Предупреждение при вложенности типов >3
+
+# Настройки для TODO/FIXME комментариев
+todo:
+  only: FIXME  # Проверяет только FIXME:, игнорируя TODO:
