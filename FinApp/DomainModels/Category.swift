@@ -24,17 +24,17 @@ struct Category: Identifiable, Codable {
     }
 
     init(from decoder: Decoder) throws {
-        let s = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try s.decode(Int.self, forKey: .id)
-        self.name = try s.decode(String.self, forKey: .name)
+        let decoderContainer = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try decoderContainer.decode(Int.self, forKey: .id)
+        self.name = try decoderContainer.decode(String.self, forKey: .name)
 
-        let emojiStr = try s.decode(String.self, forKey: .emoji)
+        let emojiStr = try decoderContainer.decode(String.self, forKey: .emoji)
         guard let first = emojiStr.first else {
-            throw DecodingError.dataCorruptedError(forKey: .emoji, in: s, debugDescription: "предупреждение: строка с emoji пустая")
+            throw DecodingError.dataCorruptedError(forKey: .emoji, in: decoderContainer, debugDescription: "предупреждение: строка с emoji пустая")
         }
         self.emoji = first
 
-        let IsIncome = try s.decode(Bool.self, forKey: .isIncome)
+        let IsIncome = try decoderContainer.decode(Bool.self, forKey: .isIncome)
         if IsIncome{
             self.isIncome = .income
         } else {
@@ -42,10 +42,10 @@ struct Category: Identifiable, Codable {
         }    }
 
     func encode(to encoder: Encoder) throws {
-        var s = encoder.container(keyedBy: CodingKeys.self)
-        try s.encode(id, forKey: .id)
-        try s.encode(name, forKey: .name)
-        try s.encode(String(emoji), forKey: .emoji)
-        try s.encode(isIncome == .income, forKey: .isIncome)
+        var encoderContainer = encoder.container(keyedBy: CodingKeys.self)
+        try encoderContainer.encode(id, forKey: .id)
+        try encoderContainer.encode(name, forKey: .name)
+        try encoderContainer.encode(String(emoji), forKey: .emoji)
+        try encoderContainer.encode(isIncome == .income, forKey: .isIncome)
     }
 }
