@@ -2,9 +2,11 @@
 .DS_Store
 */xcuserdata
 *.xcuserstate
+*.xcuserstate
 *.xcuserdatad
 *.xcbkptlist
 *.xcscheme
+*.xcodeproj
 !default.xcscheme
 xcuserdata/
 Pods/
