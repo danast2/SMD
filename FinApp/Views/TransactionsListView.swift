@@ -17,43 +17,53 @@ struct TransactionsListView: View {
     private let transactionsService = TransactionsService()
 
     var body: some View {
-        VStack {
-            if isLoading {
-                ProgressView()
-            } else if let error = error {
-                Text("Error: \(error.localizedDescription)")
-            } else {
-                VStack {
-                    Text(direction == .income ? "Доходы" : "Расходы")
-                        .font(.headline)
-                    Text("\(totalAmount.formatted(.currency(code: "RUB")))")
-                        .font(.largeTitle)
-                }
-                .padding()
-                List(transactions) { transaction in
-                    HStack {
-                        Text(String(transaction.category.emoji))
+        NavigationView {
+            VStack {
+                if isLoading {
+                    ProgressView()
+                } else if let error = error {
+                    Text("Error: \(error.localizedDescription)")
+                } else {
+                    VStack {
+                        Text(totalAmount.formatted(.currency(code: "RUB")))
                             .font(.largeTitle)
-                            .padding(.trailing, 8)
+                    }
+                    .padding()
 
-                        VStack(alignment: .leading) {
-                            Text(transaction.category.name)
-                                .font(.headline)
-                            if let comment = transaction.comment, !comment.isEmpty {
-                                Text(comment)
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
+                    List(transactions) { transaction in
+                        HStack {
+                            Text(String(transaction.category.emoji))
+                                .font(.largeTitle)
+                                .padding(.trailing, 8)
+
+                            VStack(alignment: .leading) {
+                                Text(transaction.category.name)
+                                   .font(.headline)
+
+                                if let comment = transaction.comment, !comment.isEmpty {
+                                   Text(comment)
+                                      .font(.subheadline)
+                                      .foregroundColor(.gray)
+                                }
                             }
+
+                            Spacer()
+
+                            Text(transaction.amount.formatted(
+                                .currency(code: transaction.account.currency)))
+                                .foregroundColor(direction == .income ? .green : .red)
                         }
-
-                        Spacer()
-
-                        Text(transaction.amount.formatted(
-                            .currency(code: transaction.account.currency)))
-                        .foregroundColor(direction == .income ? .green : .red)
+                    }
+                    .listStyle(.plain)
+                }
+            }
+            .navigationTitle(direction == .income ? "Доходы сегодня" : "Расходы сегодня")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink(destination: TransactionsStoryView(direction: direction)) {
+                        Image(systemName: "clock")
                     }
                 }
-                .listStyle(.plain)
             }
         }
         .task {
@@ -63,15 +73,12 @@ struct TransactionsListView: View {
             do {
                 let calendar = Calendar.current
                 let today = calendar.startOfDay(for: Date())
-                let endOfDay = calendar.date(byAdding: .day, value: 1, to: today)
+                let endOfDay = calendar.date(byAdding: .day, value: 1, to: today) ?? today
 
-                let allTransactions = try await transactionsService
-                    .fetchTransactions(from:
-                                        today,
-                                       to:
-                                        endOfDay ?? today)
+                let all = try await transactionsService
+                    .fetchTransactions(from: today, to: endOfDay)
 
-                transactions = allTransactions.filter { $0.category.direction == direction }
+                transactions = all.filter { $0.category.direction == direction }
                 totalAmount = transactions.reduce(0) { $0 + $1.amount }
             } catch {
                 self.error = error
