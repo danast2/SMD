@@ -29,10 +29,16 @@ final class TransactionsService {
         let mainBalance = Decimal(15000.00)
         let salaryAmount = Decimal(50000.00)
         let groceriesAmount = Decimal(1500.50)
+        let mockAmount1 = Decimal(1500.50)
+        let mockAmount2 = Decimal(2330.50)
+        let mockAmount3 = Decimal(99999.60)
 
         guard
-            let salaryDate = isoFormatter.date(from: "2025-06-01T10:00:00Z"),
-            let groceriesDate = isoFormatter.date(from: "2025-06-05T15:00:00Z")
+            let salaryDate = isoFormatter.date(from: "2025-06-21T10:00:00Z"),
+            let groceriesDate = isoFormatter.date(from: "2025-05-20T15:00:00Z"),
+            let mockDate1 = isoFormatter.date(from: "2025-06-18T15:01:23Z"),
+            let mockDate2 = isoFormatter.date(from: "2025-06-21T15:06:40Z"),
+            let mockDate3 = isoFormatter.date(from: "2025-06-21T15:23:33Z")
         else {
             fatalError("Error when creating mock data: invalid Date")
         }
@@ -58,6 +64,27 @@ final class TransactionsService {
             direction: .outcome
         )
 
+        let mockCategory1 = Category(
+            id: 3,
+            name: "продукты в лавке",
+            emoji: "🛒",
+            direction: .outcome
+        )
+
+        let mockCategory2 = Category(
+            id: 3,
+            name: "Dark Souls 3 в стиме",
+            emoji: "🛒",
+            direction: .outcome
+        )
+
+        let mockCategory3 = Category(
+            id: 3,
+            name: "выхлоп с темки",
+            emoji: "🛒",
+            direction: .income
+        )
+
         return [
             Transaction(
                 id: 1,
@@ -76,6 +103,36 @@ final class TransactionsService {
                 amount: groceriesAmount,
                 transactionDate: groceriesDate,
                 comment: "поход в шестёрочку",
+                createdAt: Date(),
+                updatedAt: Date()
+            ),
+            Transaction(
+                id: 3,
+                account: account,
+                category: mockCategory1,
+                amount: mockAmount1,
+                transactionDate: mockDate1,
+                comment: nil,
+                createdAt: Date(),
+                updatedAt: Date()
+            ),
+            Transaction(
+                id: 4,
+                account: account,
+                category: mockCategory2,
+                amount: mockAmount2,
+                transactionDate: mockDate2,
+                comment: nil,
+                createdAt: Date(),
+                updatedAt: Date()
+            ),
+            Transaction(
+                id: 5,
+                account: account,
+                category: mockCategory3,
+                amount: mockAmount3,
+                transactionDate: mockDate3,
+                comment: nil,
                 createdAt: Date(),
                 updatedAt: Date()
             )
