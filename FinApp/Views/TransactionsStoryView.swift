@@ -20,6 +20,13 @@ struct TransactionsStoryView: View {
     @State private var isLoading = false
     @State private var error: Error?
 
+    enum SortOption: String, CaseIterable {
+        case byDate = "По Дате"
+        case byAmount = "По Сумме"
+    }
+
+    @State private var selectedSortOption: SortOption = .byDate
+
     private let transactionsService = TransactionsService()
 
     var body: some View {
@@ -39,13 +46,24 @@ struct TransactionsStoryView: View {
                                 startDate = newEnd
                             }
                         }
-                    Text(totalAmount.formatted(.currency(code: "RUB")))
-                        .font(.largeTitle)
-                        .padding(.vertical)
+
+                    Picker("Сортировка", selection: $selectedSortOption) {
+                        ForEach(SortOption.allCases, id: \.self) { option in
+                            Text(option.rawValue)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    HStack {
+                        Text("Сумма")
+                        Spacer()
+                        Text(totalAmount.formatted(.currency(code: "RUB")))
+                    }
+
                 }
 
                 Section(header: Text("Список операций")) {
-                    ForEach(transactions) { transaction in
+                    ForEach(sortedTransactions) { transaction in
                         HStack {
                             Text(String(transaction.category.emoji))
                                 .font(.largeTitle)
@@ -53,12 +71,12 @@ struct TransactionsStoryView: View {
 
                             VStack(alignment: .leading) {
                                 Text(transaction.category.name)
-                                   .font(.headline)
+                                    .font(.headline)
 
                                 if let comment = transaction.comment, !comment.isEmpty {
-                                   Text(comment)
-                                      .font(.subheadline)
-                                      .foregroundColor(.gray)
+                                    Text(comment)
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
                                 }
                             }
 
@@ -66,7 +84,7 @@ struct TransactionsStoryView: View {
 
                             Text(transaction.amount.formatted(
                                 .currency(code: transaction.account.currency)))
-                                .foregroundColor(direction == .income ? .green : .red)
+                            .foregroundColor(direction == .income ? .green : .red)
                         }
                     }
                 }
@@ -74,33 +92,6 @@ struct TransactionsStoryView: View {
         }
         .listStyle(.grouped)
         .task(id: startDate) {
-            isLoading = true
-            error = nil
-
-            do {
-                let calendar = Calendar.current
-                let startOfPeriod = calendar.startOfDay(for: startDate)
-                var components = DateComponents()
-                components.day = 1
-                let endOfPeriod = calendar.startOfDay(for: endDate)
-                let periodEnd = calendar.date(
-                    byAdding: .day,
-                    value: 1,
-                    to: endOfPeriod) ?? endOfPeriod
-
-                let all = try await transactionsService.fetchTransactions(
-                    from: startOfPeriod,
-                    to: periodEnd
-                )
-                transactions = all.filter { $0.category.direction == direction }
-                totalAmount = transactions.reduce(0) { $0 + $1.amount }
-            } catch {
-                self.error = error
-            }
-
-            isLoading = false
-        }
-        .task(id: endDate) {
             isLoading = true
             error = nil
 
@@ -128,6 +119,43 @@ struct TransactionsStoryView: View {
 
             isLoading = false
         }
+        .task(id: endDate) {
+            isLoading = true
+            error = nil
+
+            do {
+                let calendar = Calendar.current
+                let startOfPeriod = calendar.startOfDay(for: startDate)
+                var components = DateComponents()
+                components.day = 1
+                let endOfPeriod = calendar.startOfDay(for: endDate)
+                let periodEnd = calendar.date(
+                    byAdding: .day,
+                    value: 1,
+                    to: endOfPeriod) ?? endOfPeriod
+
+                let all = try await transactionsService.fetchTransactions(
+                    from: startOfPeriod,
+                    to: periodEnd)
+                transactions = all.filter { $0.category.direction == direction }
+                totalAmount = transactions.reduce(0) { $0 + $1.amount }
+            } catch {
+                self.error = error
+            }
+
+            isLoading = false
+        }
+    }
+
+    var sortedTransactions: [Transaction] {
+        transactions.sorted(by: { lhs, rhs in
+            switch selectedSortOption {
+            case .byDate:
+                return lhs.transactionDate < rhs.transactionDate
+            case .byAmount:
+                return lhs.amount > rhs.amount
+            }
+        })
     }
 }
 
