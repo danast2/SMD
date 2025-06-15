@@ -20,13 +20,13 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            TransactionsListView(direction: .outcome)
+            TransactionsListView(direction: .outcome, transactionsService: TransactionsService())
                 .tabItem {
                     Label("Расходы", systemImage: "arrow.down")
                 }
                 .tag(TabType.expenses)
 
-            TransactionsListView(direction: .income)
+            TransactionsListView(direction: .income, transactionsService: TransactionsService())
                 .tabItem {
                     Label("Доходы", systemImage: "arrow.up")
                 }

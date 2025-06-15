@@ -27,7 +27,12 @@ struct TransactionsStoryView: View {
 
     @State private var selectedSortOption: SortOption = .byDate
 
-    private let transactionsService = TransactionsService()
+    private let transactionsService: TransactionsService
+
+    init(direction: Direction, transactionsService: TransactionsService) {
+        self.direction = direction
+        self.transactionsService = transactionsService
+    }
 
     var body: some View {
         VStack {
@@ -156,11 +161,5 @@ struct TransactionsStoryView: View {
                 return lhs.amount > rhs.amount
             }
         })
-    }
-}
-
-struct TransactionsStoryView_Previews: PreviewProvider {
-    static var previews: some View {
-        TransactionsStoryView(direction: .income)
     }
 }

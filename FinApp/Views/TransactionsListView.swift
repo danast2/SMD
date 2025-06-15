@@ -13,8 +13,12 @@ struct TransactionsListView: View {
     @State private var totalAmount: Decimal = 0
     @State private var isLoading = false
     @State private var error: Error?
+    private let transactionsService: TransactionsService
 
-    private let transactionsService = TransactionsService()
+    init(direction: Direction, transactionsService: TransactionsService) {
+        self.direction = direction
+        self.transactionsService = transactionsService
+    }
 
     var body: some View {
         NavigationView {
@@ -60,7 +64,10 @@ struct TransactionsListView: View {
             .navigationTitle(direction == .income ? "Доходы сегодня" : "Расходы сегодня")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink(destination: TransactionsStoryView(direction: direction)) {
+                    NavigationLink(
+                        destination: TransactionsStoryView(
+                            direction: direction,
+                            transactionsService: TransactionsService())) {
                         Image(systemName: "clock")
                     }
                 }
@@ -85,18 +92,6 @@ struct TransactionsListView: View {
             }
 
             isLoading = false
-        }
-    }
-}
-
-struct TransactionsListView_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            TransactionsListView(direction: .income)
-                .previewDisplayName("Доходы сегодня")
-
-            TransactionsListView(direction: .outcome)
-                .previewDisplayName("Расходы сегодня")
         }
     }
 }
