@@ -27,7 +27,18 @@ struct TransactionsStoryView: View {
             List {
                 Section(header: Text("Фильтрация")) {
                     DatePicker("Начало", selection: $startDate, displayedComponents: .date)
+                        .onChange(of: startDate) { newStart in
+                            if newStart > endDate {
+                                endDate = newStart
+                            }
+                        }
+
                     DatePicker("Конец", selection: $endDate, displayedComponents: .date)
+                        .onChange(of: endDate) { newEnd in
+                            if newEnd < startDate {
+                                startDate = newEnd
+                            }
+                        }
                     Text(totalAmount.formatted(.currency(code: "RUB")))
                         .font(.largeTitle)
                         .padding(.vertical)
@@ -68,14 +79,10 @@ struct TransactionsStoryView: View {
 
             do {
                 let calendar = Calendar.current
-                let startOfPeriod = calendar.startOfDay(
-                    for:
-                        startDate)
+                let startOfPeriod = calendar.startOfDay(for: startDate)
                 var components = DateComponents()
                 components.day = 1
-                let endOfPeriod = calendar.startOfDay(
-                    for:
-                        endDate)
+                let endOfPeriod = calendar.startOfDay(for: endDate)
                 let periodEnd = calendar.date(
                     byAdding: .day,
                     value: 1,
@@ -83,7 +90,8 @@ struct TransactionsStoryView: View {
 
                 let all = try await transactionsService.fetchTransactions(
                     from: startOfPeriod,
-                    to: periodEnd)
+                    to: periodEnd
+                )
                 transactions = all.filter { $0.category.direction == direction }
                 totalAmount = transactions.reduce(0) { $0 + $1.amount }
             } catch {
@@ -101,13 +109,12 @@ struct TransactionsStoryView: View {
                 let startOfPeriod = calendar.startOfDay(for: startDate)
                 var components = DateComponents()
                 components.day = 1
-                let endOfPeriod = calendar.startOfDay(
-                    for: endDate
-                )
+                let endOfPeriod = calendar.startOfDay(for: endDate)
                 let periodEnd = calendar.date(
                     byAdding: .day,
                     value: 1,
-                    to: endOfPeriod) ?? endOfPeriod
+                    to: endOfPeriod
+                ) ?? endOfPeriod
 
                 let all = try await transactionsService.fetchTransactions(
                     from: startOfPeriod,
