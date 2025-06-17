@@ -11,14 +11,22 @@ struct TransactionsStoryView: View {
     @ObservedObject var transactionsStoryViewModel: TransactionsStoryViewModel
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
+            HStack {
+                Text("Моя история")
+                    .font(.system(size: 34, weight: .bold))
+                    .padding(.top, 20)
+                Spacer()
+            }
+            .padding(.horizontal)
+            .background(Color(.systemGroupedBackground))
+
             List {
                 Section(header: Text("Фильтрация")) {
                     DatePicker("Начало",
                                selection: $transactionsStoryViewModel.startDate,
                                displayedComponents: .date)
-                    .onChange(of:
-                                transactionsStoryViewModel.startDate) { newStart in
+                    .onChange(of: transactionsStoryViewModel.startDate) { newStart in
                         if newStart > transactionsStoryViewModel.endDate {
                             transactionsStoryViewModel.endDate = newStart
                         }
@@ -30,8 +38,7 @@ struct TransactionsStoryView: View {
                     DatePicker("Конец",
                                selection: $transactionsStoryViewModel.endDate,
                                displayedComponents: .date)
-                    .onChange(of:
-                                transactionsStoryViewModel.endDate) { newEnd in
+                    .onChange(of: transactionsStoryViewModel.endDate) { newEnd in
                         if newEnd < transactionsStoryViewModel.startDate {
                             transactionsStoryViewModel.startDate = newEnd
                         }
@@ -48,7 +55,7 @@ struct TransactionsStoryView: View {
                                 Text(option.rawValue)
                             }
                     }
-                           .pickerStyle(.segmented)
+                    .pickerStyle(.segmented)
 
                     HStack {
                         Text("Сумма")
@@ -69,19 +76,21 @@ struct TransactionsStoryView: View {
                         .listRowBackground(Color(.systemBackground))
                     }
                 }
-
             }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .background(Color(.systemGroupedBackground))
         }
-        .listStyle(.insetGrouped)
-        .scrollContentBackground(.hidden)
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("Операции")
         .overlay {
             if transactionsStoryViewModel.isLoading {
                 ProgressView()
             }
             if let error = transactionsStoryViewModel.error {
-                Text("Ошибка: \(error.localizedDescription)").padding()
+                Text("Ошибка: \(error.localizedDescription)")
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(8)
             }
         }
     }
