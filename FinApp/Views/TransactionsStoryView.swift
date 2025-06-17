@@ -17,38 +17,38 @@ struct TransactionsStoryView: View {
                     DatePicker("Начало",
                                selection: $transactionsStoryViewModel.startDate,
                                displayedComponents: .date)
-                        .onChange(of:
-                                    transactionsStoryViewModel.startDate) { newStart in
-                            if newStart > transactionsStoryViewModel.endDate {
-                                transactionsStoryViewModel.endDate = newStart
-                            }
-                            Task {
-                                await transactionsStoryViewModel.reloadData()
-                            }
+                    .onChange(of:
+                                transactionsStoryViewModel.startDate) { newStart in
+                        if newStart > transactionsStoryViewModel.endDate {
+                            transactionsStoryViewModel.endDate = newStart
                         }
+                        Task {
+                            await transactionsStoryViewModel.reloadData()
+                        }
+                    }
 
                     DatePicker("Конец",
                                selection: $transactionsStoryViewModel.endDate,
                                displayedComponents: .date)
-                        .onChange(of:
-                                    transactionsStoryViewModel.endDate) { newEnd in
-                            if newEnd < transactionsStoryViewModel.startDate {
-                                transactionsStoryViewModel.startDate = newEnd
-                            }
-                            Task {
-                                await transactionsStoryViewModel.reloadData()
-                            }
+                    .onChange(of:
+                                transactionsStoryViewModel.endDate) { newEnd in
+                        if newEnd < transactionsStoryViewModel.startDate {
+                            transactionsStoryViewModel.startDate = newEnd
                         }
+                        Task {
+                            await transactionsStoryViewModel.reloadData()
+                        }
+                    }
 
                     Picker("Сортировка",
                            selection: $transactionsStoryViewModel.selectedSortOption) {
                         ForEach(
                             TransactionsStoryViewModel.SortOption.allCases,
                             id: \.self) { option in
-                            Text(option.rawValue)
-                        }
+                                Text(option.rawValue)
+                            }
                     }
-                    .pickerStyle(.segmented)
+                           .pickerStyle(.segmented)
 
                     HStack {
                         Text("Сумма")
@@ -68,12 +68,12 @@ struct TransactionsStoryView: View {
 
                             VStack(alignment: .leading) {
                                 Text(transaction.category.name)
-                                   .font(.headline)
+                                    .font(.headline)
 
                                 if let comment = transaction.comment, !comment.isEmpty {
-                                   Text(comment)
-                                      .font(.subheadline)
-                                      .foregroundColor(.gray)
+                                    Text(comment)
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
                                 }
                             }
 
@@ -81,8 +81,8 @@ struct TransactionsStoryView: View {
 
                             Text(transaction.amount.formatted(
                                 .currency(code: transaction.account.currency)))
-                                .foregroundColor(transactionsStoryViewModel.direction == .income ?
-                                    .green : .red)
+                            .foregroundColor(transactionsStoryViewModel.direction == .income ?
+                                .green : .red)
                         }
                     }
                 }

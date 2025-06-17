@@ -24,19 +24,19 @@ struct MainTabView: View {
                 transactionsListViewModel:
                     TransactionsListViewModel(direction: .outcome,
                                               transactionsService: TransactionsService()))
-                .tabItem {
-                    Label("Расходы", systemImage: "arrow.down")
-                }
-                .tag(TabType.expenses)
+            .tabItem {
+                Label("Расходы", systemImage: "arrow.down")
+            }
+            .tag(TabType.expenses)
 
             TransactionsListView(
                 transactionsListViewModel:
                     TransactionsListViewModel(direction: .income,
                                               transactionsService: TransactionsService()))
-                .tabItem {
-                    Label("Доходы", systemImage: "arrow.up")
-                }
-                .tag(TabType.income)
+            .tabItem {
+                Label("Доходы", systemImage: "arrow.up")
+            }
+            .tag(TabType.income)
 
             account
                 .tabItem {
@@ -69,7 +69,7 @@ struct MainTabView: View {
     }
 
     private var settings: some View {
-        Text("Настройки ")
+        Text("Настройки")
             .font(.largeTitle)
     }
 }

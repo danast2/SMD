@@ -21,7 +21,7 @@ struct TransactionsListView: View {
                     VStack {
                         Text(transactionsListViewModel.totalAmount.formatted(
                             .currency(code: "RUB")))
-                            .font(.largeTitle)
+                        .font(.largeTitle)
                     }
                     .padding()
 
@@ -33,12 +33,12 @@ struct TransactionsListView: View {
 
                             VStack(alignment: .leading) {
                                 Text(transaction.category.name)
-                                   .font(.headline)
+                                    .font(.headline)
 
                                 if let comment = transaction.comment, !comment.isEmpty {
-                                   Text(comment)
-                                      .font(.subheadline)
-                                      .foregroundColor(.gray)
+                                    Text(comment)
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
                                 }
                             }
 
@@ -46,9 +46,9 @@ struct TransactionsListView: View {
 
                             Text(transaction.amount.formatted(
                                 .currency(code: transaction.account.currency)))
-                                .foregroundColor(
-                                   transactionsListViewModel.direction == .income ?
-                                   .green : .red)
+                            .foregroundColor(
+                                transactionsListViewModel.direction == .income ?
+                                    .green : .red)
                         }
                     }
                     .listStyle(.plain)
