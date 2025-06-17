@@ -8,33 +8,24 @@
 import SwiftUI
 
 struct TransactionsListView: View {
-    let direction: Direction
-    @State private var transactions: [Transaction] = []
-    @State private var totalAmount: Decimal = 0
-    @State private var isLoading = false
-    @State private var error: Error?
-    private let transactionsService: TransactionsService
-
-    init(direction: Direction, transactionsService: TransactionsService) {
-        self.direction = direction
-        self.transactionsService = transactionsService
-    }
+    @ObservedObject var transactionsListViewModel: TransactionsListViewModel
 
     var body: some View {
         NavigationView {
             VStack {
-                if isLoading {
+                if transactionsListViewModel.isLoading {
                     ProgressView()
-                } else if let error = error {
+                } else if let error = transactionsListViewModel.error {
                     Text("Error: \(error.localizedDescription)")
                 } else {
                     VStack {
-                        Text(totalAmount.formatted(.currency(code: "RUB")))
+                        Text(transactionsListViewModel.totalAmount.formatted(
+                            .currency(code: "RUB")))
                             .font(.largeTitle)
                     }
                     .padding()
 
-                    List(transactions) { transaction in
+                    List(transactionsListViewModel.transactions) { transaction in
                         HStack {
                             Text(String(transaction.category.emoji))
                                 .font(.largeTitle)
@@ -55,43 +46,34 @@ struct TransactionsListView: View {
 
                             Text(transaction.amount.formatted(
                                 .currency(code: transaction.account.currency)))
-                                .foregroundColor(direction == .income ? .green : .red)
+                                .foregroundColor(
+                                   transactionsListViewModel.direction == .income ?
+                                   .green : .red)
                         }
                     }
                     .listStyle(.plain)
                 }
             }
-            .navigationTitle(direction == .income ? "Доходы сегодня" : "Расходы сегодня")
+            .navigationTitle(
+                transactionsListViewModel.direction == .income ?
+                "Доходы сегодня" : "Расходы сегодня")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink(
                         destination: TransactionsStoryView(
-                            direction: direction,
-                            transactionsService: TransactionsService())) {
+                            transactionsStoryViewModel: TransactionsStoryViewModel(
+                                direction: transactionsListViewModel.direction,
+                                transactionsService: TransactionsService()
+                            )
+                        )
+                    ) {
                         Image(systemName: "clock")
                     }
                 }
             }
         }
-        .task {
-            isLoading = true
-            error = nil
-
-            do {
-                let calendar = Calendar.current
-                let today = calendar.startOfDay(for: Date())
-                let endOfDay = calendar.date(byAdding: .day, value: 1, to: today) ?? today
-
-                let all = try await transactionsService
-                    .fetchTransactions(from: today, to: endOfDay)
-
-                transactions = all.filter { $0.category.direction == direction }
-                totalAmount = transactions.reduce(0) { $0 + $1.amount }
-            } catch {
-                self.error = error
-            }
-
-            isLoading = false
+        .onAppear {
+            transactionsListViewModel.loadTransactionsForListView()
         }
     }
 }

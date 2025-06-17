@@ -20,13 +20,19 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            TransactionsListView(direction: .outcome, transactionsService: TransactionsService())
+            TransactionsListView(
+                transactionsListViewModel:
+                    TransactionsListViewModel(direction: .outcome,
+                                              transactionsService: TransactionsService()))
                 .tabItem {
                     Label("Расходы", systemImage: "arrow.down")
                 }
                 .tag(TabType.expenses)
 
-            TransactionsListView(direction: .income, transactionsService: TransactionsService())
+            TransactionsListView(
+                transactionsListViewModel:
+                    TransactionsListViewModel(direction: .income,
+                                              transactionsService: TransactionsService()))
                 .tabItem {
                     Label("Доходы", systemImage: "arrow.up")
                 }
@@ -65,26 +71,5 @@ struct MainTabView: View {
     private var settings: some View {
         Text("Настройки ")
             .font(.largeTitle)
-    }
-}
-
-// Вью-заглушка для табов
-struct PlaceholderView: View {
-    let title: String
-    let icon: String
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 20) {
-                Image(systemName: icon)
-                    .font(.system(size: 50))
-                    .foregroundColor(Color("AccentColor"))
-
-                Text(title)
-                    .font(.title2.bold())
-            }
-            .navigationTitle(title)
-            .navigationBarTitleDisplayMode(.inline)
-        }
     }
 }
