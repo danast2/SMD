@@ -61,34 +61,20 @@ struct TransactionsStoryView: View {
 
                 Section(header: Text("Список операций")) {
                     ForEach(transactionsStoryViewModel.sortedTransactions) { transaction in
-                        HStack {
-                            Text(String(transaction.category.emoji))
-                                .font(.largeTitle)
-                                .padding(.trailing, 8)
-
-                            VStack(alignment: .leading) {
-                                Text(transaction.category.name)
-                                    .font(.headline)
-
-                                if let comment = transaction.comment, !comment.isEmpty {
-                                    Text(comment)
-                                        .font(.subheadline)
-                                        .foregroundColor(.gray)
-                                }
-                            }
-
-                            Spacer()
-
-                            Text(transaction.amount.formatted(
-                                .currency(code: transaction.account.currency)))
-                            .foregroundColor(transactionsStoryViewModel.direction == .income ?
-                                .green : .red)
-                        }
+                        TransactionRow(
+                            transaction: transaction,
+                            direction: transactionsStoryViewModel.direction
+                        )
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color(.systemBackground))
                     }
                 }
+
             }
         }
-        .listStyle(.grouped)
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(Color(.systemGroupedBackground))
         .navigationTitle("Операции")
         .overlay {
             if transactionsStoryViewModel.isLoading {
