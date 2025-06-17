@@ -22,7 +22,9 @@ struct TransactionsListView: View {
                 }
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle(transactionsListViewModel.direction == .income ? "Доходы сегодня" : "Расходы сегодня")
+            .navigationTitle(
+                transactionsListViewModel.direction == .income ?
+                "Доходы сегодня" : "Расходы сегодня")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { toolbarItems }
         }
@@ -54,7 +56,7 @@ struct TransactionsListView: View {
                 .foregroundColor(.gray)
             ) {
                 ForEach(transactionsListViewModel.transactions) { transaction in
-                    TransactionRow(
+                    TransactionRowView(
                         transaction: transaction,
                         direction: transactionsListViewModel.direction
                     )
@@ -82,56 +84,5 @@ struct TransactionsListView: View {
                     .foregroundColor(.black)
             }
         }
-    }
-}
-
-struct TransactionRow: View {
-    let transaction: Transaction
-    let direction: Direction
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Text(String(transaction.category.emoji))
-                .font(.system(size: 17))
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(transaction.category.name)
-                    .font(.system(size: 17))
-                    .foregroundColor(.primary)
-
-                if let comment = transaction.comment, !comment.isEmpty {
-                    Text(comment)
-                        .font(.system(size: 13))
-                        .foregroundColor(.gray)
-                }
-            }
-
-            Spacer()
-
-            Text(transaction.amount.formatted(.currency(code: "RUB")))
-                .font(.system(size: 17))
-                .foregroundColor(.black)
-        }
-        .padding(.vertical, 12)
-    }
-}
-
-struct TotalCardView: View {
-    let totalAmount: Decimal
-
-    var body: some View {
-        HStack {
-            Text(String("Всего"))
-                .font(.system(size: 17))
-
-            Spacer()
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(totalAmount.formatted(.currency(code: "RUB")))
-                    .font(.system(size: 17, weight: .medium))
-                    .foregroundColor(.primary)
-            }
-        }
-        .padding(.vertical, 12)
     }
 }

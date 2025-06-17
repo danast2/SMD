@@ -61,7 +61,7 @@ struct TransactionsStoryView: View {
 
                 Section(header: Text("Список операций")) {
                     ForEach(transactionsStoryViewModel.sortedTransactions) { transaction in
-                        TransactionRow(
+                        TransactionRowView(
                             transaction: transaction,
                             direction: transactionsStoryViewModel.direction
                         )
