@@ -36,9 +36,9 @@ final class TransactionsService {
         guard
             let salaryDate = isoFormatter.date(from: "2025-06-15T10:00:00Z"),
             let groceriesDate = isoFormatter.date(from: "2025-05-15T15:00:00Z"),
-            let mockDate1 = isoFormatter.date(from: "2025-06-15T15:01:23Z"),
-            let mockDate2 = isoFormatter.date(from: "2025-06-15T15:06:40Z"),
-            let mockDate3 = isoFormatter.date(from: "2025-06-15T15:23:33Z")
+            let mockDate1 = isoFormatter.date(from: "2025-06-18T15:01:23Z"),
+            let mockDate2 = isoFormatter.date(from: "2025-06-18T15:06:40Z"),
+            let mockDate3 = isoFormatter.date(from: "2025-06-18T15:23:33Z")
         else {
             fatalError("Error when creating mock data: invalid Date")
         }
