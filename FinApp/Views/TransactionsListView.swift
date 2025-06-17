@@ -22,9 +22,6 @@ struct TransactionsListView: View {
                 }
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle(
-                transactionsListViewModel.direction == .income ?
-                "Доходы сегодня" : "Расходы сегодня")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { toolbarItems }
         }
@@ -44,30 +41,39 @@ struct TransactionsListView: View {
     }
 
     private var contentView: some View {
-        List {
-            Section {
-                TotalCardView(totalAmount: transactionsListViewModel.totalAmount)
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color(.systemBackground))
+        VStack(spacing: 0) {
+            HStack {
+                Text(transactionsListViewModel.direction == .income ? "Доходы сегодня" : "Расходы сегодня")
+                    .font(.system(size: 34, weight: .bold))
+                Spacer()
             }
+            .padding(.top, 20)
+            .padding(.horizontal)
 
-            Section(header: Text("ОПЕРАЦИИ")
-                .font(.system(size: 13))
-                .foregroundColor(.gray)
-            ) {
-                ForEach(transactionsListViewModel.transactions) { transaction in
-                    TransactionRowView(
-                        transaction: transaction,
-                        direction: transactionsListViewModel.direction
-                    )
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color(.systemBackground))
+            List {
+                Section {
+                    TotalCardView(totalAmount: transactionsListViewModel.totalAmount)
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color(.systemBackground))
+                }
+
+                Section(header: Text("ОПЕРАЦИИ")
+                    .font(.system(size: 13))
+                    .foregroundColor(.gray)
+                ) {
+                    ForEach(transactionsListViewModel.transactions) { transaction in
+                        TransactionRowView(
+                            transaction: transaction,
+                            direction: transactionsListViewModel.direction
+                        )
+                        .listRowBackground(Color(.systemBackground))
+                    }
                 }
             }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .background(Color(.systemGroupedBackground))
         }
-        .listStyle(.insetGrouped)
-        .scrollContentBackground(.hidden)
-        .background(Color(.systemGroupedBackground))
     }
 
     private var toolbarItems: some ToolbarContent {
