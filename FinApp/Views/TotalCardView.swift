@@ -12,17 +12,17 @@ struct TotalCardView: View {
 
     var body: some View {
         HStack {
-            Text(String("Всего"))
-                .font(.system(size: 17))
-
+            Text("Всего")
+                .fontWeight(.regular)
+                .padding(.leading, 16)
             Spacer()
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(totalAmount.formatted(.currency(code: "RUB")))
-                    .font(.system(size: 17, weight: .medium))
-                    .foregroundColor(.primary)
-            }
+            Text("\(totalAmount) ₽")
+                .fontWeight(.regular)
+                .padding(.trailing, 16)
         }
-        .padding(.vertical, 12)
+        .padding(.vertical, 8)
+        .frame(height: 44)
+        .background(Color.white)
+        .cornerRadius(10)
     }
 }

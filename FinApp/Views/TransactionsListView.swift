@@ -23,7 +23,7 @@ struct TransactionsListView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { toolbarItems }
+            .toolbar { toolbar }
         }
         .onAppear {
             transactionsListViewModel.loadTransactionsForListView()
@@ -36,47 +36,66 @@ struct TransactionsListView: View {
     }
 
     private func errorView(_ error: Error) -> some View {
-        Text("Error: \(error.localizedDescription)")
+        Text("Ошибка: \(error.localizedDescription)")
+            .multilineTextAlignment(.center)
+            .padding()
             .frame(maxHeight: .infinity)
     }
 
     private var contentView: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Text(transactionsListViewModel.direction == .income ? "Доходы сегодня" : "Расходы сегодня")
-                    .font(.system(size: 34, weight: .bold))
-                Spacer()
-            }
-            .padding(.top, 20)
-            .padding(.horizontal)
+        VStack {
+            headerView
+
+            TotalCardView(totalAmount: transactionsListViewModel.totalAmount)
+
+            Text("ОПЕРАЦИИ")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .padding(.top, 12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
 
             List {
-                Section {
-                    TotalCardView(totalAmount: transactionsListViewModel.totalAmount)
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color(.systemBackground))
-                }
-
-                Section(header: Text("ОПЕРАЦИИ")
-                    .font(.system(size: 13))
-                    .foregroundColor(.gray)
-                ) {
-                    ForEach(transactionsListViewModel.transactions) { transaction in
-                        TransactionRowView(
-                            transaction: transaction,
-                            direction: transactionsListViewModel.direction
-                        )
-                        .listRowBackground(Color(.systemBackground))
-                    }
+                ForEach(Array(
+                    transactionsListViewModel.transactions.enumerated()),
+                        id: \.element.id) { index, transaction in
+                    TransactionRowView(
+                        transaction: transaction,
+                        direction: transactionsListViewModel.direction
+                    )
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(
+                        RoundedRectangle(cornerRadius: 16,
+                                         style: .continuous)
+                            .fill(Color.white)
+                            .padding(.top, index == 0 ? 0 : -16)
+                            .padding(.bottom,
+                                     index == transactionsListViewModel.transactions.count - 1 ?
+                                     0 : -16)
+                            .clipShape(Rectangle())
+                    )
                 }
             }
-            .listStyle(.insetGrouped)
+            .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            .background(Color(.systemGroupedBackground))
         }
+        .padding()
+        .background(Color(.systemGray6).ignoresSafeArea())
     }
 
-    private var toolbarItems: some ToolbarContent {
+    private var headerView: some View {
+        HStack {
+            Text(
+                transactionsListViewModel.direction == .outcome ?
+                "Расходы сегодня" : "Доходы сегодня")
+                .font(.largeTitle)
+                .bold()
+            Spacer()
+        }
+        .padding(.top, 16)
+    }
+
+    private var toolbar: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
             NavigationLink(
                 destination: TransactionsStoryView(
