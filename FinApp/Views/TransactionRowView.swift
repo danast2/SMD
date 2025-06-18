@@ -39,9 +39,6 @@ struct TransactionRowView: View {
                 .font(.system(size: 17))
                 .foregroundColor(.black)
 
-            Image(systemName: "chevron.right")
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundColor(Color(.systemGray3))
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
