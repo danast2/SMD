@@ -15,7 +15,7 @@ struct TransactionRowView: View {
         HStack(spacing: 12) {
             ZStack {
                 Circle()
-                    .fill(Color(.green))
+                    .fill(Color("NewAccentColor"))
                     .frame(width: 30, height: 30)
                 Text(String(transaction.category.emoji))
                     .font(.system(size: 14))

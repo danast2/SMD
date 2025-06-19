@@ -18,6 +18,11 @@ struct MainTabView: View {
 
     @State private var selectedTab: TabType = .expenses
 
+    init() {
+        UITabBar.appearance().tintColor = UIColor(named: "NewAccentColor")
+        UITabBar.appearance().unselectedItemTintColor = .gray
+    }
+
     var body: some View {
         TabView(selection: $selectedTab) {
             TransactionsListView(
@@ -25,7 +30,11 @@ struct MainTabView: View {
                     TransactionsListViewModel(direction: .outcome,
                                               transactionsService: TransactionsService()))
             .tabItem {
-                Label("Расходы", systemImage: "arrow.down")
+                Label {
+                    Text("Расходы")
+                } icon: {
+                    Image("outcome")
+                }
             }
             .tag(TabType.expenses)
 
@@ -34,25 +43,41 @@ struct MainTabView: View {
                     TransactionsListViewModel(direction: .income,
                                               transactionsService: TransactionsService()))
             .tabItem {
-                Label("Доходы", systemImage: "arrow.up")
+                Label {
+                    Text("Доходы")
+                } icon: {
+                    Image("income")
+                }
             }
             .tag(TabType.income)
 
             account
                 .tabItem {
-                    Label("Счет", systemImage: "creditcard")
+                    Label {
+                        Text("Счет")
+                    } icon: {
+                        Image("accounts")
+                    }
                 }
                 .tag(TabType.account)
 
             items
                 .tabItem {
-                    Label("Статьи", systemImage: "list.bullet")
+                    Label {
+                        Text("Статьи")
+                    } icon: {
+                        Image("items")
+                    }
                 }
                 .tag(TabType.items)
 
             settings
                 .tabItem {
-                    Label("Настройки", systemImage: "gear")
+                    Label {
+                        Text("Настройки")
+                    } icon: {
+                        Image("settings")
+                    }
                 }
                 .tag(TabType.settings)
         }
