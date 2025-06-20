@@ -19,75 +19,67 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             TransactionsListView(
-                transactionsListViewModel:
-                    TransactionsListViewModel(direction: .outcome,
-                                              transactionsService: TransactionsService()))
+                transactionsListViewModel: TransactionsListViewModel(
+                    direction: .outcome,
+                    transactionsService: TransactionsService()
+                )
+            )
             .tabItem {
                 Label {
-                    Text("Расходы")
+                    Text(TabType.expenses.title)
                 } icon: {
-                    Image("outcome")
+                    TabType.expenses.icon
                 }
             }
             .tag(TabType.expenses)
 
             TransactionsListView(
-                transactionsListViewModel:
-                    TransactionsListViewModel(direction: .income,
-                                              transactionsService: TransactionsService()))
+                transactionsListViewModel: TransactionsListViewModel(
+                    direction: .income,
+                    transactionsService: TransactionsService()
+                )
+            )
             .tabItem {
                 Label {
-                    Text("Доходы")
+                    Text(TabType.income.title)
                 } icon: {
-                    Image("income")
+                    TabType.income.icon
                 }
             }
             .tag(TabType.income)
 
-            account
+            Text("Счет")
+                .font(.largeTitle)
                 .tabItem {
                     Label {
-                        Text("Счет")
+                        Text(TabType.account.title)
                     } icon: {
-                        Image("accounts")
+                        TabType.account.icon
                     }
                 }
                 .tag(TabType.account)
 
-            items
+            Text("Статьи")
+                .font(.largeTitle)
                 .tabItem {
                     Label {
-                        Text("Статьи")
+                        Text(TabType.items.title)
                     } icon: {
-                        Image("items")
+                        TabType.items.icon
                     }
                 }
                 .tag(TabType.items)
 
-            settings
+            Text("Настройки")
+                .font(.largeTitle)
                 .tabItem {
                     Label {
-                        Text("Настройки")
+                        Text(TabType.settings.title)
                     } icon: {
-                        Image("settings")
+                        TabType.settings.icon
                     }
                 }
                 .tag(TabType.settings)
         }
-    }
-
-    private var account: some View {
-        Text("Счет")
-            .font(.largeTitle)
-    }
-
-    private var items: some View {
-        Text("Статьи")
-            .font(.largeTitle)
-    }
-
-    private var settings: some View {
-        Text("Настройки")
-            .font(.largeTitle)
     }
 }
