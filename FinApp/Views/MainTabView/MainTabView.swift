@@ -27,57 +27,19 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            TransactionsListView(transactionsListViewModel: outcomeVM)
-                .tabItem {
-                    Label {
-                        Text(TabType.expenses.title)
-                    } icon: {
-                        TabType.expenses.icon
-                    }
-                }
+            ExpensesTabView(viewModel: outcomeVM)
                 .tag(TabType.expenses)
 
-            TransactionsListView(transactionsListViewModel: incomeVM)
-                .tabItem {
-                    Label {
-                        Text(TabType.income.title)
-                    } icon: {
-                        TabType.income.icon
-                    }
-                }
+            IncomeTabView(viewModel: incomeVM)
                 .tag(TabType.income)
 
-            Text(TabType.account.title)
-                .font(.largeTitle)
-                .tabItem {
-                    Label {
-                        Text(TabType.account.title)
-                    } icon: {
-                        TabType.account.icon
-                    }
-                }
+            AccountTabView()
                 .tag(TabType.account)
 
-            Text(TabType.items.title)
-                .font(.largeTitle)
-                .tabItem {
-                    Label {
-                        Text(TabType.items.title)
-                    } icon: {
-                        TabType.items.icon
-                    }
-                }
+            ItemsTabView()
                 .tag(TabType.items)
 
-            Text(TabType.settings.title)
-                .font(.largeTitle)
-                .tabItem {
-                    Label {
-                        Text(TabType.settings.title)
-                    } icon: {
-                        TabType.settings.icon
-                    }
-                }
+            SettingsTabView()
                 .tag(TabType.settings)
         }
     }
