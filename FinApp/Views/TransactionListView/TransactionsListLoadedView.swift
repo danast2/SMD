@@ -24,14 +24,16 @@ struct TransactionsListLoadedView: View {
                 .padding(.horizontal)
 
             List {
-                ForEach(Array(viewModel.transactions.enumerated()), id: \.element.id) { index, transaction in
+                ForEach(Array(viewModel.transactions.enumerated()),
+                        id: \.element.id) { index, transaction in
                     TransactionRowView(transaction: transaction, direction: viewModel.direction)
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(
                             RoundedRectangle(cornerRadius: 16, style: .continuous)
                                 .fill(Color.white)
                                 .padding(.top, index == 0 ? 0 : -16)
-                                .padding(.bottom, index == viewModel.transactions.count - 1 ? 0 : -16)
+                                .padding(.bottom,
+                                         index == viewModel.transactions.count - 1 ? 0 : -16)
                                 .clipShape(Rectangle())
                         )
                 }

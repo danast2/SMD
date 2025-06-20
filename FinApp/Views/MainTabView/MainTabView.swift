@@ -8,8 +8,17 @@
 import SwiftUI
 
 struct MainTabView: View {
-
     @State private var selectedTab: TabType = .expenses
+
+    @StateObject private var outcomeVM = TransactionsListViewModel(
+        direction: .outcome,
+        transactionsService: TransactionsService()
+    )
+
+    @StateObject private var incomeVM = TransactionsListViewModel(
+        direction: .income,
+        transactionsService: TransactionsService()
+    )
 
     init() {
         UITabBar.appearance().tintColor = UIColor(named: "NewAccentColor")
@@ -18,35 +27,25 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            TransactionsListView(
-                transactionsListViewModel: TransactionsListViewModel(
-                    direction: .outcome,
-                    transactionsService: TransactionsService()
-                )
-            )
-            .tabItem {
-                Label {
-                    Text(TabType.expenses.title)
-                } icon: {
-                    TabType.expenses.icon
+            TransactionsListView(transactionsListViewModel: outcomeVM)
+                .tabItem {
+                    Label {
+                        Text(TabType.expenses.title)
+                    } icon: {
+                        TabType.expenses.icon
+                    }
                 }
-            }
-            .tag(TabType.expenses)
+                .tag(TabType.expenses)
 
-            TransactionsListView(
-                transactionsListViewModel: TransactionsListViewModel(
-                    direction: .income,
-                    transactionsService: TransactionsService()
-                )
-            )
-            .tabItem {
-                Label {
-                    Text(TabType.income.title)
-                } icon: {
-                    TabType.income.icon
+            TransactionsListView(transactionsListViewModel: incomeVM)
+                .tabItem {
+                    Label {
+                        Text(TabType.income.title)
+                    } icon: {
+                        TabType.income.icon
+                    }
                 }
-            }
-            .tag(TabType.income)
+                .tag(TabType.income)
 
             Text(TabType.account.title)
                 .font(.largeTitle)
