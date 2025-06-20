@@ -7,7 +7,6 @@
 
 import Foundation
 
-@MainActor
 class TransactionsListViewModel: ObservableObject {
 
     let direction: Direction
@@ -25,29 +24,30 @@ class TransactionsListViewModel: ObservableObject {
 
     func loadTransactionsForListView() {
         Task {
-            isLoading = true
-            error = nil
+            await MainActor.run { self.isLoading = true }
+            defer { Task { await MainActor.run { self.isLoading = false } } }
 
             do {
                 let calendar = Calendar.current
                 let today = calendar.startOfDay(for: Date())
                 let endOfDay = calendar.date(
-                    bySettingHour: 23,
-                    minute: 59,
-                    second: 59,
-                    of: today
+                    bySettingHour: 23, minute: 59, second: 59, of: today
                 ) ?? today
 
-                let all = try await transactionsService
-                    .fetchTransactions(from: today, to: endOfDay)
-
+                let all = try await transactionsService.fetchTransactions(from: today, to: endOfDay)
                 let related = all.filter { $0.category.direction == direction }
-                transactions = related
-                totalAmount = related.reduce(0) { $0 + $1.amount }
+                let total = related.reduce(0) { $0 + $1.amount }
+
+                await MainActor.run {
+                    self.transactions = related
+                    self.totalAmount = total
+                }
+
             } catch {
-                self.error = error
+                await MainActor.run {
+                    self.error = error
+                }
             }
-            isLoading = false
         }
     }
 }

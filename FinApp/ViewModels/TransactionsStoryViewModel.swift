@@ -7,7 +7,6 @@
 
 import Foundation
 
-@MainActor
 class TransactionsStoryViewModel: ObservableObject {
     enum SortOption: String, CaseIterable {
         case byDate = "По Дате"
@@ -29,14 +28,14 @@ class TransactionsStoryViewModel: ObservableObject {
     let transactionsService: TransactionsService
 
     var sortedTransactions: [Transaction] {
-        transactions.sorted(by: { lhs, rhs in
+        transactions.sorted {
             switch selectedSortOption {
             case .byDate:
-                return lhs.transactionDate < rhs.transactionDate
+                return $0.transactionDate < $1.transactionDate
             case .byAmount:
-                return lhs.amount > rhs.amount
+                return $0.amount > $1.amount
             }
-        })
+        }
     }
 
     init(direction: Direction, transactionsService: TransactionsService) {
@@ -48,24 +47,33 @@ class TransactionsStoryViewModel: ObservableObject {
     }
 
     func reloadData() async {
-        isLoading = true
-        error = nil
+        await MainActor.run {
+            self.isLoading = true
+            self.error = nil
+        }
+
         do {
             let calendar = Calendar.current
             let startOfPeriod = calendar.startOfDay(for: startDate)
-            var components = DateComponents()
-            components.day = 1
             let endOfPeriod = calendar.startOfDay(for: endDate)
             let periodEnd = calendar.date(byAdding: .day, value: 1, to: endOfPeriod) ?? endOfPeriod
 
-            let all = try await transactionsService.fetchTransactions(
-                from: startOfPeriod,
-                to: periodEnd)
-            transactions = all.filter { $0.category.direction == direction }
-            totalAmount = transactions.reduce(0) { $0 + $1.amount }
+            let all = try await transactionsService.fetchTransactions(from: startOfPeriod, to: periodEnd)
+            let filtered = all.filter { $0.category.direction == direction }
+            let total = filtered.reduce(0) { $0 + $1.amount }
+
+            await MainActor.run {
+                self.transactions = filtered
+                self.totalAmount = total
+            }
         } catch {
-            self.error = error
+            await MainActor.run {
+                self.error = error
+            }
         }
-        isLoading = false
+
+        await MainActor.run {
+            self.isLoading = false
+        }
     }
 }
