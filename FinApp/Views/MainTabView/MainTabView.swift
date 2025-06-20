@@ -8,13 +8,6 @@
 import SwiftUI
 
 struct MainTabView: View {
-    enum TabType: Hashable {
-        case expenses
-        case income
-        case account
-        case items
-        case settings
-    }
 
     @State private var selectedTab: TabType = .expenses
 
