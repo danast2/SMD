@@ -36,7 +36,7 @@ struct TransactionsListView: View {
     }
 
     private func errorView(_ error: Error) -> some View {
-        Text("Ошибка: \(error.localizedDescription)")
+        Text("error.title: \(error.localizedDescription)".localized)
             .multilineTextAlignment(.center)
             .padding()
             .frame(maxHeight: .infinity)
@@ -48,7 +48,7 @@ struct TransactionsListView: View {
 
             TotalCardView(totalAmount: transactionsListViewModel.totalAmount)
 
-            Text("ОПЕРАЦИИ")
+            Text("title.operations".localized)
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .padding(.top, 12)
@@ -87,7 +87,7 @@ struct TransactionsListView: View {
         HStack {
             Text(
                 transactionsListViewModel.direction == .outcome ?
-                "Расходы сегодня" : "Доходы сегодня")
+                "title.todayExpenses".localized : "title.todayIncome".localized)
                 .font(.largeTitle)
                 .bold()
             Spacer()

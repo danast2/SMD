@@ -1,0 +1,26 @@
+//
+//  Localizable.strings
+//  FinApp
+//
+//  Created by Даниил Дементьев on 20.06.2025.
+//
+
+"tab.expenses" = "Расходы";
+"tab.income" = "Доходы";
+"tab.account" = "Счет";
+"tab.items" = "Статьи";
+"tab.settings" = "Настройки";
+
+"title.total" = "Всего";
+"title.todayExpenses" = "Расходы сегодня";
+"title.todayIncome" = "Доходы сегодня";
+"title.myHistory" = "Моя история";
+"title.operations" = "ОПЕРАЦИИ";
+"title.start" = "Начало";
+"title.end" = "Конец";
+"title.sort" = "Соритировка";
+"title.summ" = "Сумма";
+"title.byDate" = "По Дате";
+"title.byAmount" = "По Сумме";
+
+"error.title" = "Ошибка";

@@ -24,7 +24,7 @@ struct TransactionsStoryView: View {
                 ProgressView()
             }
             if let error = transactionsStoryViewModel.error {
-                Text("Ошибка: \(error.localizedDescription)")
+                Text("error.title: \(error.localizedDescription)".localized)
                     .multilineTextAlignment(.center)
                     .padding()
                     .background(Color.white)
@@ -35,7 +35,7 @@ struct TransactionsStoryView: View {
 
     private var headerView: some View {
         HStack {
-            Text("Моя история")
+            Text("title.myHistory".localized)
                 .font(.system(size: 34, weight: .bold))
             Spacer()
         }
@@ -44,7 +44,7 @@ struct TransactionsStoryView: View {
 
     private var filterCard: some View {
         VStack(spacing: 0) {
-            DatePicker("Начало",
+            DatePicker("title.start".localized,
                        selection: $transactionsStoryViewModel.startDate,
                        displayedComponents: .date)
                 .onChange(of: transactionsStoryViewModel.startDate) { newStart in
@@ -58,7 +58,7 @@ struct TransactionsStoryView: View {
 
             Divider()
 
-            DatePicker("Конец",
+            DatePicker("title.end".localized,
                        selection: $transactionsStoryViewModel.endDate,
                        displayedComponents: .date)
                 .onChange(of: transactionsStoryViewModel.endDate) { newEnd in
@@ -72,10 +72,10 @@ struct TransactionsStoryView: View {
 
             Divider()
 
-            Picker("Сортировка",
+            Picker("title.sort",
                    selection: $transactionsStoryViewModel.selectedSortOption) {
                 ForEach(TransactionsStoryViewModel.SortOption.allCases, id: \.self) { option in
-                    Text(option.rawValue)
+                    Text(option.localizedTitle)
                 }
             }
             .pickerStyle(.segmented)
@@ -84,7 +84,7 @@ struct TransactionsStoryView: View {
             Divider()
 
             HStack {
-                Text("Сумма")
+                Text("title.summ".localized)
                 Spacer()
                 Text(transactionsStoryViewModel.totalAmount
                         .formatted(.currency(code: "RUB")))
@@ -100,7 +100,7 @@ struct TransactionsStoryView: View {
     }
 
     private var operationsHeader: some View {
-        Text("ОПЕРАЦИИ")
+        Text("title.operations".localized)
             .font(.caption)
             .foregroundColor(.secondary)
             .padding(.top, 12)

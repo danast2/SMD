@@ -9,8 +9,12 @@ import Foundation
 
 class TransactionsStoryViewModel: ObservableObject {
     enum SortOption: String, CaseIterable {
-        case byDate = "По Дате"
-        case byAmount = "По Сумме"
+        case byDate = "title.byDate"
+        case byAmount = "title.byAmount"
+
+        var localizedTitle: String {
+            rawValue.localized
+        }
     }
 
     @Published var startDate = Calendar.current.date(
@@ -58,7 +62,9 @@ class TransactionsStoryViewModel: ObservableObject {
             let endOfPeriod = calendar.startOfDay(for: endDate)
             let periodEnd = calendar.date(byAdding: .day, value: 1, to: endOfPeriod) ?? endOfPeriod
 
-            let all = try await transactionsService.fetchTransactions(from: startOfPeriod, to: periodEnd)
+            let all = try await transactionsService.fetchTransactions(
+                from: startOfPeriod,
+                to: periodEnd)
             let filtered = all.filter { $0.category.direction == direction }
             let total = filtered.reduce(0) { $0 + $1.amount }
 

@@ -12,7 +12,7 @@ struct TotalCardView: View {
 
     var body: some View {
         HStack {
-            Text("Всего")
+            Text("title.total".localized)
                 .fontWeight(.regular)
                 .padding(.leading, 16)
             Spacer()

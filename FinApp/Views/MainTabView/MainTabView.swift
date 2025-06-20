@@ -48,7 +48,7 @@ struct MainTabView: View {
             }
             .tag(TabType.income)
 
-            Text("Счет")
+            Text(TabType.account.title)
                 .font(.largeTitle)
                 .tabItem {
                     Label {
@@ -59,7 +59,7 @@ struct MainTabView: View {
                 }
                 .tag(TabType.account)
 
-            Text("Статьи")
+            Text(TabType.items.title)
                 .font(.largeTitle)
                 .tabItem {
                     Label {
@@ -70,7 +70,7 @@ struct MainTabView: View {
                 }
                 .tag(TabType.items)
 
-            Text("Настройки")
+            Text(TabType.settings.title)
                 .font(.largeTitle)
                 .tabItem {
                     Label {
