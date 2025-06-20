@@ -32,9 +32,11 @@ class TransactionsListViewModel: ObservableObject {
                 let calendar = Calendar.current
                 let today = calendar.startOfDay(for: Date())
                 let endOfDay = calendar.date(
-                    byAdding: .day,
-                    value: 1,
-                    to: today) ?? today //вот этот момент надо точно отрефакторить
+                    bySettingHour: 23,
+                    minute: 59,
+                    second: 59,
+                    of: today
+                ) ?? today
 
                 let all = try await transactionsService
                     .fetchTransactions(from: today, to: endOfDay)
