@@ -40,6 +40,7 @@ struct TransactionsStoryView: View {
             Spacer()
         }
         .padding(.top, 16)
+        .padding(.bottom, 16)
     }
 
     private var filterCard: some View {
