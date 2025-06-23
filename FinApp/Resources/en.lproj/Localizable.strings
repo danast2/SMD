@@ -22,6 +22,14 @@
 "title.summ" = "Amount";
 "title.byDate" = "By Date";
 "title.byAmount" = "By Amount";
+"title.myAccount" = "My Account";
+"title.save" = "Save";
+"title.edit" = "Edit";
+"title.balance" = "Balance";
+"title.currency" = "Currency";
 
 "error.title" = "Error";
 
+"currency.rub" = "Russian Ruble";
+"currency.usd" = "US Dollar";
+"currency.eur" = "Euro";
