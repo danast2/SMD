@@ -22,7 +22,7 @@ struct TransactionsListToolbar: ToolbarContent {
                     )
             ) {
                 Image(systemName: "clock")
-                    .foregroundColor(.black)
+                    .foregroundColor(.indigo)
             }
         }
     }

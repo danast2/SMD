@@ -20,6 +20,10 @@ struct MainTabView: View {
         transactionsService: TransactionsService()
     )
 
+    @StateObject private var accountVM = BankAccountViewModel(
+        service: BankAccountServiceMock()
+    )
+
     init() {
         UITabBar.appearance().tintColor = UIColor(named: "NewAccentColor")
         UITabBar.appearance().unselectedItemTintColor = .gray
@@ -36,6 +40,7 @@ struct MainTabView: View {
                 .tag(TabType.income)
 
             AccountTabView()
+                .environmentObject(accountVM)
                 .tag(TabType.account)
 
             ItemsTabView()

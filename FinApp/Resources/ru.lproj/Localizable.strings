@@ -22,5 +22,14 @@
 "title.summ" = "Сумма";
 "title.byDate" = "По Дате";
 "title.byAmount" = "По Сумме";
+"title.myAccount" = "Мой счёт";
+"title.save" = "Сохранить";
+"title.edit" = "Редактировать";
+"title.balance" = "Баланс";
+"title.currency" = "Валюта";
 
 "error.title" = "Ошибка";
+
+"currency.rub" = "Российский рубль";
+"currency.usd" = "Американский доллар";
+"currency.eur" = "Евро";
