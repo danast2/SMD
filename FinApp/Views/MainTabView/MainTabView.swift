@@ -24,6 +24,10 @@ struct MainTabView: View {
         service: BankAccountServiceMock()
     )
 
+    @StateObject private var categoriesVM = CategoriesViewModel(
+        service: CategoriesService()
+    )
+
     init() {
         UITabBar.appearance().tintColor = UIColor(named: "NewAccentColor")
         UITabBar.appearance().unselectedItemTintColor = .gray
@@ -44,6 +48,7 @@ struct MainTabView: View {
                 .tag(TabType.account)
 
             ItemsTabView()
+                .environmentObject(categoriesVM)
                 .tag(TabType.items)
 
             SettingsTabView()

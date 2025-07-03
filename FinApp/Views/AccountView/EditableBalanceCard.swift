@@ -20,7 +20,6 @@ struct EditableBalanceCard: View {
                 .multilineTextAlignment(.trailing)
                 .font(.system(size: 17, weight: .regular))
                 .onChange(of: balanceText) { newValue in
-                    
                     let replaced = newValue.replacingOccurrences(of: ",", with: ".")
                     var filtered = replaced.filter { "0123456789.-".contains($0) }
                     if filtered.contains("-") {
