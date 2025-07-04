@@ -15,7 +15,10 @@
 "title.todayExpenses" = "Расходы сегодня";
 "title.todayIncome" = "Доходы сегодня";
 "title.myHistory" = "Моя история";
+"title.myItems" = "Мои статьи";
+"title.search" = "Поиск";
 "title.operations" = "ОПЕРАЦИИ";
+"title.items" = "СТАТЬИ";
 "title.start" = "Начало";
 "title.end" = "Конец";
 "title.sort" = "Соритировка";
