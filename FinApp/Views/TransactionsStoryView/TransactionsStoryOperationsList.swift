@@ -16,7 +16,7 @@ struct TransactionsStoryOperationsList: View {
                     id: \.element.id) { index, transaction in
                 TransactionRowView(
                     transaction: transaction,
-                    direction: viewModel.direction
+                    direction: viewModel.direction, onTap: nil
                 )
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(

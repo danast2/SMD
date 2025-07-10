@@ -10,6 +10,7 @@ import SwiftUI
 struct TransactionRowView: View {
     let transaction: Transaction
     let direction: Direction
+    let onTap: (() -> Void)?
 
     private var timeFormatter: Date.FormatStyle {
         Date.FormatStyle()
@@ -52,11 +53,13 @@ struct TransactionRowView: View {
                         .foregroundColor(.gray)
                 }
             }
-
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
         .frame(height: 44)
         .contentShape(Rectangle())
+        .onTapGesture {
+            onTap?()
+        }
     }
 }

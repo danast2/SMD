@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TransactionsListLoadedView: View {
     @EnvironmentObject var viewModel: TransactionsListViewModel
+    let onSelect: (Transaction) -> Void
 
     var body: some View {
         VStack {
@@ -26,15 +27,17 @@ struct TransactionsListLoadedView: View {
             let items = viewModel.transactions
             List {
                 ForEach(Array(items.enumerated()), id: \.element.id) { index, transaction in
-                    TransactionRowView(transaction: transaction,
-                                       direction: viewModel.direction)
+                    TransactionRowView(
+                        transaction: transaction,
+                        direction: viewModel.direction,
+                        onTap: { onSelect(transaction) }
+                    )
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
                             .fill(Color.white)
                             .padding(.top, index == 0 ? 0 : -16)
-                            .padding(.bottom,
-                                     index == items.count - 1 ? 0 : -16)
+                            .padding(.bottom, index == items.count - 1 ? 0 : -16)
                             .clipShape(Rectangle())
                     )
                     .listRowSeparator(

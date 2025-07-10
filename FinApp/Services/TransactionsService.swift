@@ -34,54 +34,54 @@ final class TransactionsService {
         let mockAmount3 = Decimal(99999.60)
 
         guard
-            let salaryDate = isoFormatter.date(from: "2025-06-21T10:00:00Z"),
-            let groceriesDate = isoFormatter.date(from: "2025-05-20T15:00:00Z"),
-            let mockDate1 = isoFormatter.date(from: "2025-06-18T15:01:23Z"),
-            let mockDate2 = isoFormatter.date(from: "2025-06-21T15:06:40Z"),
-            let mockDate3 = isoFormatter.date(from: "2025-06-21T15:23:33Z")
+            let salaryDate = isoFormatter.date(from: "2025-07-12T10:00:00Z"),
+            let groceriesDate = isoFormatter.date(from: "2025-06-12T15:00:00Z"),
+            let mockDate1 = isoFormatter.date(from: "2025-07-12T15:01:23Z"),
+            let mockDate2 = isoFormatter.date(from: "2025-07-12T15:06:40Z"),
+            let mockDate3 = isoFormatter.date(from: "2025-07-12T15:23:33Z")
         else {
             fatalError("Error when creating mock data: invalid Date")
         }
 
         let account = AccountBrief(
-            id: 1,
+            id: 0,
             name: "Основной счёт",
             balance: mainBalance,
             currency: "RUB"
         )
 
         let salaryCategory = Category(
-            id: 1,
+            id: 22,
             name: "зп",
             emoji: "💰",
             direction: .income
         )
 
         let groceriesCategory = Category(
-            id: 2,
+            id: 33,
             name: "продукты в шестёрочке",
             emoji: "🛒",
             direction: .outcome
         )
 
         let mockCategory1 = Category(
-            id: 3,
+            id: 44,
             name: "продукты в лавке",
             emoji: "🛒",
             direction: .outcome
         )
 
         let mockCategory2 = Category(
-            id: 3,
+            id: 55,
             name: "Dark Souls 3 в стиме",
             emoji: "🛒",
             direction: .outcome
         )
 
         let mockCategory3 = Category(
-            id: 3,
+            id: 66,
             name: "выхлоп с темки",
-            emoji: "🛒",
+            emoji: "💰",
             direction: .income
         )
 

@@ -9,8 +9,8 @@ import Foundation
 
 class TransactionsListViewModel: ObservableObject {
 
+    let transactionsService: TransactionsService
     let direction: Direction
-    private let transactionsService: TransactionsService
 
     @Published var transactions: [Transaction] = []
     @Published var totalAmount: Decimal = 0
@@ -22,32 +22,41 @@ class TransactionsListViewModel: ObservableObject {
         self.transactionsService = transactionsService
     }
 
+    /// Запускает асинхронную загрузку (на фоновом потоке)
     func loadTransactionsForListView() {
         Task {
-            await MainActor.run { self.isLoading = true }
-            defer { Task { await MainActor.run { self.isLoading = false } } }
+            await fetchAndProcessTransactions()
+        }
+    }
 
-            do {
-                let calendar = Calendar.current
-                let today = calendar.startOfDay(for: Date())
-                let endOfDay = calendar.date(
-                    bySettingHour: 23, minute: 59, second: 59, of: today
-                ) ?? today
+    /// Выполняет fetch на фоне, затем — UI-обновления на главном потоке
+    @MainActor
+    private func fetchAndProcessTransactions() async {
+        isLoading = true
+        defer { isLoading = false }
 
-                let all = try await transactionsService.fetchTransactions(from: today, to: endOfDay)
-                let related = all.filter { $0.category.direction == direction }
-                let total = related.reduce(0) { $0 + $1.amount }
+        do {
+            let calendar = Calendar.current
+            let today = calendar.startOfDay(for: Date())
+            let endOfDay = calendar.date(
+                bySettingHour: 23, minute: 59, second: 59, of: today
+            ) ?? today
 
-                await MainActor.run {
-                    self.transactions = related
-                    self.totalAmount = total
-                }
+            // Асинхронный вызов на фоне
+            let all = try await transactionsService.fetchTransactions(
+                from: today, to: endOfDay
+            )
 
-            } catch {
-                await MainActor.run {
-                    self.error = error
-                }
-            }
+            // Фильтрация и подсчёт — тоже безопасно на главном, быстро
+            let related = all.filter { $0.category.direction == direction }
+            let total = related.reduce(0) { $0 + $1.amount }
+
+            // Обновляем свойства, которые наблюдаются UI
+            transactions = related
+            totalAmount = total
+
+        } catch {
+            self.error = error
         }
     }
 }
