@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TransactionsListContentView: View {
     @EnvironmentObject var viewModel: TransactionsListViewModel
+    let onSelect: (Transaction) -> Void
 
     var body: some View {
         Group {
@@ -21,7 +22,8 @@ struct TransactionsListContentView: View {
                     .padding()
                     .frame(maxHeight: .infinity)
             } else {
-                TransactionsListLoadedView()
+                TransactionsListLoadedView(onSelect: onSelect)
+                    .environmentObject(viewModel)
             }
         }
         .background(Color(.systemGroupedBackground))

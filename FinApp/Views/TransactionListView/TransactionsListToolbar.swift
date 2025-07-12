@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TransactionsListToolbar: ToolbarContent {
     let direction: Direction
+    @EnvironmentObject var transactionsListViewModel: TransactionsListViewModel
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
@@ -17,7 +18,7 @@ struct TransactionsListToolbar: ToolbarContent {
                     .environmentObject(
                         TransactionsStoryViewModel(
                             direction: direction,
-                            transactionsService: TransactionsService()
+                            transactionsService: transactionsListViewModel.transactionsService
                         )
                     )
             ) {
