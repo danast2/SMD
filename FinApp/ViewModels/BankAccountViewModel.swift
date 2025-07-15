@@ -7,19 +7,27 @@
 
 import Foundation
 import SwiftUI
+import Combine
 
+@MainActor
 final class BankAccountViewModel: ObservableObject {
+
     @Published var account: BankAccount?
     @Published var isEditing = false
     @Published var isBalanceHidden = false
     @Published var balanceInput = ""
     @Published var selectedCurrency: String = Currency.rub.rawValue
     @Published var error: Error?
+    @Published var isLoading = false
 
-    private let service: BankAccountServiceMock
+    let didLoad = PassthroughSubject<Void, Never>()
 
-    init(service: BankAccountServiceMock) {
+    private let service: any BankAccountServiceProtocol
+    private var bag = Set<AnyCancellable>()
+
+    init(service: any BankAccountServiceProtocol) {
         self.service = service
+        Task { await loadAccount() }
 
         NotificationCenter.default.addObserver(
             self,
@@ -38,61 +46,13 @@ final class BankAccountViewModel: ObservableObject {
     }
 
     @objc private func didShake() {
-        handleShake()
-    }
-
-    func loadAccount() {
-        Task {
-            do {
-                let fetched = try await service.fetchAccount()
-
-                await MainActor.run {
-                    self.account = fetched
-                    self.selectedCurrency = fetched.currency
-                }
-            } catch {
-                await MainActor.run {
-                    self.error = error
-                }
-            }
+        withAnimation(.easeInOut(duration: 0.3)) {
+            isBalanceHidden.toggle()
         }
     }
 
-    func saveChanges() {
-        guard let oldAccount = account else { return }
-
-        let cleaned = balanceInput
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .replacingOccurrences(of: ",", with: ".")
-
-        let validNumberPattern = #"^-?\d*\.?\d*$"#
-        if cleaned.range(of: validNumberPattern, options: .regularExpression) != nil,
-           let newBalance = Decimal(string: cleaned) {
-            let updated = BankAccount(
-                id: oldAccount.id,
-                userId: oldAccount.userId,
-                name: oldAccount.name,
-                balance: newBalance,
-                currency: selectedCurrency,
-                createdAt: oldAccount.createdAt,
-                updatedAt: Date()
-            )
-
-            Task {
-                do {
-                    try await service.updateAccount(updated)
-
-                    await MainActor.run {
-                        self.account = updated
-                        self.isEditing = false
-                    }
-                } catch {
-                    await MainActor.run {
-                        self.error = error
-                    }
-                }
-            }
-        }
+    func reload() {
+        Task { await loadAccount() }
     }
 
     func toggleEditMode() {
@@ -100,15 +60,53 @@ final class BankAccountViewModel: ObservableObject {
             saveChanges()
         } else {
             isEditing = true
-            if let account = account {
-                balanceInput = "\(account.balance)"
-            }
+            if let account { balanceInput = "\(account.balance)" }
         }
     }
 
-    func handleShake() {
-        withAnimation(.easeInOut(duration: 0.3)) {
-            isBalanceHidden.toggle()
+    func loadAccount() async {
+        isLoading = true
+        defer { isLoading = false }
+        do {
+            account = try await service.fetchAccount()
+            selectedCurrency = account?.currency ?? Currency.rub.rawValue
+            didLoad.send()
+        } catch {
+            self.error = error
+        }
+    }
+
+    private func saveChanges() {
+        guard let oldAccount = account else { return }
+
+        let cleaned = balanceInput
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: ",", with: ".")
+
+        let validPattern = #"^-?\d*\.?\d*$"#
+        guard
+            cleaned.range(of: validPattern, options: .regularExpression) != nil,
+            let newBalance = Decimal(string: cleaned)
+        else { return }
+
+        let updated = BankAccount(
+            id: oldAccount.id,
+            userId: oldAccount.userId,
+            name: oldAccount.name,
+            balance: newBalance,
+            currency: selectedCurrency,
+            createdAt: oldAccount.createdAt,
+            updatedAt: Date()
+        )
+
+        Task {
+            do {
+                try await service.updateAccount(updated)
+                await loadAccount()
+                isEditing = false
+            } catch {
+                self.error = error
+            }
         }
     }
 }

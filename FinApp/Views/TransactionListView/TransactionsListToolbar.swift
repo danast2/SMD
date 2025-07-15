@@ -9,19 +9,19 @@ import SwiftUI
 
 struct TransactionsListToolbar: ToolbarContent {
     let direction: Direction
-    @EnvironmentObject var transactionsListViewModel: TransactionsListViewModel
+    @EnvironmentObject private var listVM: TransactionsListViewModel
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            NavigationLink(
-                destination: TransactionsStoryView()
+            NavigationLink {
+                TransactionsStoryView()
                     .environmentObject(
                         TransactionsStoryViewModel(
                             direction: direction,
-                            transactionsService: transactionsListViewModel.transactionsService
+                            transactionsService: listVM.transactionsService
                         )
                     )
-            ) {
+            } label: {
                 Image(systemName: "clock")
                     .foregroundColor(.indigo)
             }

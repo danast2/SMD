@@ -19,13 +19,14 @@ final class TransactionFormViewModel: ObservableObject {
     @Published var showValidationAlert = false
     @Published var error: Error?
     @Published private(set) var accountBrief: AccountBrief?
+    @Published var isLoading = false
 
     let mode: TransactionFormMode
     let direction: Direction
 
-    private let transactionsService: TransactionsService
-    private let categoriesService = CategoriesService()
-    private let bankAccountService: BankAccountServiceMock
+    private let transactionsService: any TransactionsServiceProtocol
+    private let categoriesService: any CategoriesServiceProtocol
+    private let bankAccountService: any BankAccountServiceProtocol
     private let original: Transaction?
     private let originalCategoryID: Int?
 
@@ -33,23 +34,25 @@ final class TransactionFormViewModel: ObservableObject {
         mode: TransactionFormMode,
         original: Transaction? = nil,
         direction: Direction,
-        transactionsService: TransactionsService,
-        bankAccountService: BankAccountServiceMock
+        transactionsService: any TransactionsServiceProtocol,
+        bankAccountService: any BankAccountServiceProtocol,
+        categoriesService: any CategoriesServiceProtocol
     ) {
         self.mode = mode
         self.direction = direction
         self.transactionsService = transactionsService
         self.bankAccountService = bankAccountService
+        self.categoriesService = categoriesService
         self.original = original
         self.originalCategoryID = original?.category.id
 
-        if let tr = original {
-            amountString = String(describing: tr.amount)
+        if let transaction = original {
+            amountString = String(describing: transaction.amount)
             let cal = Calendar.current
-            day = cal.startOfDay(for: tr.transactionDate)
-            time = tr.transactionDate
-            comment = tr.comment ?? ""
-            accountBrief = tr.account
+            day = cal.startOfDay(for: transaction.transactionDate)
+            time = transaction.transactionDate
+            comment = transaction.comment ?? ""
+            accountBrief = transaction.account
         } else {
             Task { await loadAccount() }
         }
@@ -60,12 +63,15 @@ final class TransactionFormViewModel: ObservableObject {
     private var decSep: String { Locale.current.decimalSeparator ?? "." }
 
     var isValid: Bool {
-        selectedCategory != nil
-            && Decimal(string: amountString.replacingOccurrences(of: decSep, with: ".")) != nil
+        selectedCategory != nil &&
+        Decimal(string: amountString.replacingOccurrences(of: decSep, with: ".")) != nil
     }
 
     @MainActor
     func save() async throws {
+        isLoading = true
+        defer { isLoading = false }
+
         guard isValid else {
             showValidationAlert = true
             return
@@ -75,9 +81,7 @@ final class TransactionFormViewModel: ObservableObject {
             let baseCat = selectedCategory,
             let amount = Decimal(string: amountString.replacingOccurrences(of: decSep, with: ".")),
             let account = accountBrief
-        else {
-            return
-        }
+        else { return }
 
         let cal = Calendar.current
         let comps = cal.dateComponents([.hour, .minute, .second], from: time)
@@ -91,7 +95,7 @@ final class TransactionFormViewModel: ObservableObject {
         let trimmed = comment.trimmingCharacters(in: .whitespacesAndNewlines)
         let finalComment = trimmed.isEmpty ? nil : trimmed
 
-        let tx = Transaction(
+        let transaction = Transaction(
             id: original?.id ?? Int.random(in: 1...Int.max),
             account: account,
             category: baseCat,
@@ -103,14 +107,16 @@ final class TransactionFormViewModel: ObservableObject {
         )
 
         if mode == .create {
-            try await transactionsService.createTransaction(tx)
+            try await transactionsService.createTransaction(transaction)
         } else {
-            try await transactionsService.updateTransaction(tx)
+            try await transactionsService.updateTransaction(transaction)
         }
     }
 
     @MainActor
     func delete() async throws {
+        isLoading = true
+        defer { isLoading = false }
         guard let id = original?.id else { return }
         try await transactionsService.deleteTransaction(by: id)
     }

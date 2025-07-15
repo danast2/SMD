@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 final class CategoriesViewModel: ObservableObject {
     @Published var allCategories: [Category] = []
     @Published var filteredCategories: [Category] = []
@@ -16,27 +17,25 @@ final class CategoriesViewModel: ObservableObject {
         }
     }
     @Published var error: Error?
+    @Published var isLoading = false
 
-    private let service: CategoriesService
+    private let service: any CategoriesServiceProtocol
 
-    init(service: CategoriesService) {
+    init(service: any CategoriesServiceProtocol) {
         self.service = service
-        loadCategories()
+        Task { await loadCategories() }
     }
 
-    func loadCategories() {
-        Task {
-            do {
-                let fetched = try await service.categories()
-                await MainActor.run {
-                    self.allCategories = fetched
-                    self.filteredCategories = fetched
-                }
-            } catch {
-                await MainActor.run {
-                    self.error = error
-                }
-            }
+    func loadCategories() async {
+        isLoading = true
+        do {
+            let fetched = try await service.categories()
+            allCategories = fetched
+            filteredCategories = fetched
+            isLoading = false
+        } catch {
+            self.error = error
+            self.isLoading = false
         }
     }
 
@@ -44,9 +43,7 @@ final class CategoriesViewModel: ObservableObject {
         let query = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
 
         guard !query.isEmpty else {
-            DispatchQueue.main.async {
-                self.filteredCategories = self.allCategories
-            }
+            filteredCategories = allCategories
             return
         }
 
@@ -54,9 +51,7 @@ final class CategoriesViewModel: ObservableObject {
             fuzzyMatch(query: query, text: category.name.lowercased())
         }
 
-        DispatchQueue.main.async {
-            self.filteredCategories = filtered
-        }
+        filteredCategories = filtered
     }
 
     private func fuzzyMatch(query: String, text: String) -> Bool {

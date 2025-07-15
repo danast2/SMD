@@ -54,35 +54,35 @@ final class TransactionsService {
             id: 22,
             name: "зп",
             emoji: "💰",
-            direction: .income
+            direction: Direction.income
         )
 
         let groceriesCategory = Category(
             id: 33,
             name: "продукты в шестёрочке",
             emoji: "🛒",
-            direction: .outcome
+            direction: Direction.outcome
         )
 
         let mockCategory1 = Category(
             id: 44,
             name: "продукты в лавке",
             emoji: "🛒",
-            direction: .outcome
+            direction: Direction.outcome
         )
 
         let mockCategory2 = Category(
             id: 55,
             name: "Dark Souls 3 в стиме",
             emoji: "🛒",
-            direction: .outcome
+            direction: Direction.outcome
         )
 
         let mockCategory3 = Category(
             id: 66,
             name: "выхлоп с темки",
             emoji: "💰",
-            direction: .income
+            direction: Direction.income
         )
 
         return [

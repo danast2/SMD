@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788" systemVersion="24F74" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="BackupAccountCD" representedClassName="BackupAccountCD" syncable="YES" codeGenerationType="class">
+        <attribute name="actionRaw" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="json" optional="YES" attributeType="Binary"/>
+    </entity>
+    <entity name="BackupTransactionCD" representedClassName="BackupTransactionCD" syncable="YES" codeGenerationType="class">
+        <attribute name="actionRaw" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="json" optional="YES" attributeType="Binary"/>
+    </entity>
+    <entity name="BankAccountCD" representedClassName="BankAccountCD" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="json" optional="YES" attributeType="Binary"/>
+    </entity>
+    <entity name="CategoryCD" representedClassName="CategoryCD" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="json" optional="YES" attributeType="Binary"/>
+    </entity>
+    <entity name="TransactionCD" representedClassName="TransactionCD" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="json" optional="YES" attributeType="Binary"/>
+    </entity>
+</model>
