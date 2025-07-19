@@ -40,8 +40,8 @@ extension Transaction {
         let category = Category(
             id: categoryId,
             name: components[6],
-            emoji: categoryEmoji,
-            direction: isIncome ? .income : .outcome
+            emoji: String(categoryEmoji),
+            direction: isIncome ? Direction.income : Direction.outcome
         )
 
         let comment = components[11].isEmpty ? nil : components[11]

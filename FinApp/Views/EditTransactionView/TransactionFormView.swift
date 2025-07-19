@@ -16,20 +16,25 @@ struct TransactionFormView: View {
 
     @State private var errorMessage: String?
 
+    private let categoriesService: any CategoriesServiceProtocol
+
     init(
         mode: TransactionFormMode,
         transaction: Transaction? = nil,
         direction: Direction,
-        transactionsService: TransactionsService,
-        bankAccountService: BankAccountServiceMock
+        transactionsService: any TransactionsServiceProtocol,
+        bankAccountService: any BankAccountServiceProtocol,
+        categoriesService: any CategoriesServiceProtocol
     ) {
+        self.categoriesService = categoriesService
         _vm = StateObject(
             wrappedValue: TransactionFormViewModel(
                 mode: mode,
                 original: transaction,
                 direction: direction,
                 transactionsService: transactionsService,
-                bankAccountService: bankAccountService
+                bankAccountService: bankAccountService,
+                categoriesService: categoriesService
             )
         )
     }
@@ -48,20 +53,16 @@ struct TransactionFormView: View {
 
                 HStack {
                     Text("Сумма")
-                        .font(.system(size: 17, weight: .regular))
                     Spacer()
                     TextField("0", text: $vm.amountString)
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
-                        .font(.system(size: 17, weight: .regular))
                         .onChange(of: vm.amountString) { newValue in
                             let decSep = Locale.current.decimalSeparator ?? "."
-                            var filtered = newValue.filter { char in
-                                char.isNumber || String(char) == decSep
-                            }
-                            if let firstSepIndex = filtered.firstIndex(of: Character(decSep)) {
-                                let prefix = filtered[...firstSepIndex]
-                                let suffix = filtered[filtered.index(after: firstSepIndex)...]
+                            var filtered = newValue.filter { $0.isNumber || String($0) == decSep }
+                            if let first = filtered.firstIndex(of: Character(decSep)) {
+                                let prefix = filtered[...first]
+                                let suffix = filtered[filtered.index(after: first)...]
                                     .filter { String($0) != decSep }
                                 filtered = String(prefix) + String(suffix)
                             }
@@ -73,12 +74,10 @@ struct TransactionFormView: View {
                            selection: $vm.day,
                            in: ...Date(),
                            displayedComponents: .date)
-                .datePickerStyle(.compact)
 
                 DatePicker("Время",
                            selection: $vm.time,
                            displayedComponents: .hourAndMinute)
-                .datePickerStyle(.compact)
 
                 TextField("Комментарий", text: $vm.comment)
                     .foregroundColor(vm.comment.isEmpty ? .secondary : .primary)
@@ -91,36 +90,24 @@ struct TransactionFormView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(vm.mode == .create ? "Создать" : "Сохранить") {
-                        if vm.isValid {
-                            Task {
-                                do {
-                                    try await vm.save()
-                                    listVM.loadTransactionsForListView()
-                                    dismiss()
-                                } catch {
-                                    errorMessage = error.localizedDescription
-                                }
+                        guard vm.isValid else { vm.showValidationAlert = true; return }
+                        Task {
+                            do {
+                                try await vm.save()
+                                listVM.loadTransactionsForListView()
+                                dismiss()
+                            } catch {
+                                errorMessage = error.localizedDescription
                             }
-                        } else {
-                            vm.showValidationAlert = true
                         }
                     }
                 }
             }
-            .alert("Заполните все поля", isPresented: $vm.showValidationAlert) {
-                Button("ОК", role: .cancel) { }
-            }
-            .alert(
-                "Ошибка",
-                isPresented: Binding<Bool>(
-                    get: { errorMessage != nil },
-                    set: { newValue in if !newValue { errorMessage = nil } }
-                )
-            ) {
-                Button("ОК", role: .cancel) {
-                    errorMessage = nil
-                }
-            } message: {
+            .alert("Заполните все поля", isPresented: $vm.showValidationAlert) { }
+            .alert("Ошибка", isPresented: Binding(
+                get: { errorMessage != nil },
+                set: { if !$0 { errorMessage = nil } }
+            )) { } message: {
                 Text(errorMessage ?? "Неизвестная ошибка")
             }
             .safeAreaInset(edge: .bottom) {

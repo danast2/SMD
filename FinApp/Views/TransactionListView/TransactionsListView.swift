@@ -8,57 +8,72 @@
 import SwiftUI
 
 struct TransactionsListView: View {
-    @EnvironmentObject var transactionsListViewModel: TransactionsListViewModel
+
+    @EnvironmentObject private var viewModel: TransactionsListViewModel
 
     @State private var isPresentingCreateForm = false
     @State private var editingTransaction: Transaction?
 
+    private let categoriesService: any CategoriesServiceProtocol
+    private let bankAccountService: any BankAccountServiceProtocol
+
+    init(
+        categoriesService: any CategoriesServiceProtocol,
+        bankAccountService: any BankAccountServiceProtocol
+    ) {
+        self.categoriesService   = categoriesService
+        self.bankAccountService  = bankAccountService
+    }
+
     var body: some View {
         NavigationView {
             ZStack {
-                TransactionsListContentView(onSelect: { transaction in
-                    editingTransaction = transaction
-                })
-                .environmentObject(transactionsListViewModel)
+                TransactionsListContentView { trx in
+                    editingTransaction = trx
+                }
+                .environmentObject(viewModel)
 
                 VStack {
                     Spacer()
                     HStack {
                         Spacer()
-                        FloatingActionButton {
-                            isPresentingCreateForm = true
-                        }
-                        .padding(.trailing, 20)
-                        .padding(.bottom)
+                        FloatingActionButton { isPresentingCreateForm = true }
+                            .padding(.trailing, 20)
+                            .padding(.bottom)
                     }
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                TransactionsListToolbar(direction: transactionsListViewModel.direction)
+                TransactionsListToolbar(direction: viewModel.direction)
+            }
+            .alert("Ошибка", isPresented: .constant(viewModel.error != nil), presenting: viewModel.error) { _ in
+                Button("OK", role: .cancel) { }
+            } message: { error in
+                Text(error.localizedDescription)
             }
             .fullScreenCover(isPresented: $isPresentingCreateForm) {
                 TransactionFormView(
                     mode: .create,
-                    direction: transactionsListViewModel.direction,
-                    transactionsService: transactionsListViewModel.transactionsService,
-                    bankAccountService: BankAccountServiceMock()
+                    direction: viewModel.direction,
+                    transactionsService: viewModel.transactionsService,
+                    bankAccountService: bankAccountService,
+                    categoriesService: categoriesService
                 )
-                .environmentObject(transactionsListViewModel)
+                .environmentObject(viewModel)
             }
-            .fullScreenCover(item: $editingTransaction) { transaction in
+            .fullScreenCover(item: $editingTransaction) { trx in
                 TransactionFormView(
                     mode: .edit,
-                    transaction: transaction,
-                    direction: transactionsListViewModel.direction,
-                    transactionsService: transactionsListViewModel.transactionsService,
-                    bankAccountService: BankAccountServiceMock()
+                    transaction: trx,
+                    direction: viewModel.direction,
+                    transactionsService: viewModel.transactionsService,
+                    bankAccountService: bankAccountService,
+                    categoriesService: categoriesService
                 )
-                .environmentObject(transactionsListViewModel)
+                .environmentObject(viewModel)
             }
         }
-        .onAppear {
-            transactionsListViewModel.loadTransactionsForListView()
-        }
+        .loading(viewModel.isLoading)
     }
 }

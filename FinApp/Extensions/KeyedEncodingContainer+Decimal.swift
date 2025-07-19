@@ -8,7 +8,8 @@
 import Foundation
 
 extension KeyedEncodingContainer {
-    mutating func encodeDecimalString(_ value: Decimal, forKey key: Key) throws {
-        try self.encode(value.description, forKey: key)
+    mutating func encodeDecimalString(_ value: Decimal,
+                                      forKey key: KeyedEncodingContainer<K>.Key) throws {
+        try encode(NSDecimalNumber(decimal: value).stringValue, forKey: key)
     }
 }

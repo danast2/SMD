@@ -9,10 +9,10 @@ import Foundation
 
 final class CategoriesService {
     private let categories: [Category] = [
-        Category(id: 1, name: "Зарплата", emoji: "💵", direction: .income),
-        Category(id: 2, name: "Подарок", emoji: "🎁", direction: .income),
-        Category(id: 3, name: "Продукты", emoji: "🛒", direction: .outcome),
-        Category(id: 4, name: "Развлечения", emoji: "🎮", direction: .outcome)
+        Category(id: 1, name: "Зарплата", emoji: "💵", direction: Direction.income),
+        Category(id: 2, name: "Подарок", emoji: "🎁", direction: Direction.income),
+        Category(id: 3, name: "Продукты", emoji: "🛒", direction: Direction.outcome),
+        Category(id: 4, name: "Развлечения", emoji: "🎮", direction: Direction.outcome)
     ]
 
     func categories() async throws -> [Category] {

@@ -12,6 +12,9 @@ struct FinAppApp: App {
     var body: some Scene {
         WindowGroup {
             MainTabView()
+                .task {
+                    await MainTabView.performMigrationIfNeeded()
+                }
         }
     }
 }

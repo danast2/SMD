@@ -9,19 +9,14 @@ import Foundation
 
 class TransactionsStoryViewModel: ObservableObject {
     enum SortOption: String, CaseIterable {
-        case byDate = "title.byDate"
+        case byDate  = "title.byDate"
         case byAmount = "title.byAmount"
 
-        var localizedTitle: String {
-            rawValue.localized
-        }
+        var localizedTitle: String { rawValue.localized }
     }
 
-    @Published var startDate = Calendar.current.date(
-        byAdding: .month,
-        value: -1,
-        to: Date()) ?? Date()
-    @Published var endDate = Date()
+    @Published var startDate: Date
+    @Published var endDate: Date
     @Published var transactions: [Transaction] = []
     @Published var totalAmount: Decimal = 0
     @Published var isLoading = false
@@ -29,57 +24,52 @@ class TransactionsStoryViewModel: ObservableObject {
     @Published var selectedSortOption: SortOption = .byDate
 
     let direction: Direction
-    let transactionsService: TransactionsService
+    private let transactionsService: any TransactionsServiceProtocol
 
     var sortedTransactions: [Transaction] {
         transactions.sorted {
             switch selectedSortOption {
-            case .byDate:
-                return $0.transactionDate < $1.transactionDate
-            case .byAmount:
-                return $0.amount > $1.amount
+            case .byDate:   return $0.transactionDate < $1.transactionDate
+            case .byAmount: return $0.amount > $1.amount
             }
         }
     }
 
-    init(direction: Direction, transactionsService: TransactionsService) {
+    init(direction: Direction, transactionsService: any TransactionsServiceProtocol) {
         self.direction = direction
         self.transactionsService = transactionsService
-        Task {
-            await reloadData()
-        }
+
+        let now = Date()
+        let calendar = Calendar.current
+        self.endDate   = now
+        self.startDate = calendar.date(byAdding: .month, value: -1, to: now) ?? now
+
+        Task { await reloadData() }
     }
 
+    @MainActor
     func reloadData() async {
-        await MainActor.run {
-            self.isLoading = true
-            self.error = nil
-        }
+        isLoading = true
+        error = nil
+
+        let calendar = Calendar.current
+        let periodStart = calendar.startOfDay(for: startDate)
+        let dayAfterEnd = calendar.date(
+            byAdding: .day,
+            value: 1,
+            to: calendar.startOfDay(for: endDate)) ?? endDate
 
         do {
-            let calendar = Calendar.current
-            let startOfPeriod = calendar.startOfDay(for: startDate)
-            let endOfPeriod = calendar.startOfDay(for: endDate)
-            let periodEnd = calendar.date(byAdding: .day, value: 1, to: endOfPeriod) ?? endOfPeriod
-
             let all = try await transactionsService.fetchTransactions(
-                from: startOfPeriod,
-                to: periodEnd)
+                from: periodStart,
+                to: dayAfterEnd)
             let filtered = all.filter { $0.category.direction == direction }
-            let total = filtered.reduce(0) { $0 + $1.amount }
-
-            await MainActor.run {
-                self.transactions = filtered
-                self.totalAmount = total
-            }
+            transactions = filtered
+            totalAmount = filtered.reduce(0) { $0 + $1.amount }
         } catch {
-            await MainActor.run {
-                self.error = error
-            }
+            self.error = error
         }
 
-        await MainActor.run {
-            self.isLoading = false
-        }
+        isLoading = false
     }
 }

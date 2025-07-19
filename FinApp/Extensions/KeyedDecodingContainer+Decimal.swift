@@ -9,12 +9,20 @@ import Foundation
 
 extension KeyedDecodingContainer {
     func decodeDecimalString(forKey key: Key) throws -> Decimal {
-        let string = try self.decode(String.self, forKey: key)
-        guard let decimal = Decimal(string: string) else {
-            throw DecodingError.dataCorruptedError(forKey: key,
-                in: self,
-                debugDescription: "Cannot convert string to Decimal")
+        if let str = try? decode(String.self, forKey: key),
+           let decimal = Decimal(string: str.replacingOccurrences(of: ",", with: ".")) {
+            return decimal
         }
-        return decimal
+        if let dbl = try? decode(Double.self, forKey: key) {
+            return Decimal(dbl)
+        }
+        if let intVal = try? decode(Int.self, forKey: key) {
+            return Decimal(intVal)
+        }
+        throw DecodingError.dataCorruptedError(
+            forKey: key,
+            in: self,
+            debugDescription: "Value for key \(key) can't be converted to Decimal"
+        )
     }
 }
