@@ -10,13 +10,27 @@ import SwiftUI
 struct TransactionsStoryView: View {
     @EnvironmentObject var viewModel: TransactionsStoryViewModel
     @State private var showAnalysis = false
+    @State private var editingTransaction: Transaction?
+
+    private let categoriesService: any CategoriesServiceProtocol
+    private let bankAccountService: any BankAccountServiceProtocol
+
+    init(
+        categoriesService: any CategoriesServiceProtocol,
+        bankAccountService: any BankAccountServiceProtocol
+    ) {
+        self.categoriesService = categoriesService
+        self.bankAccountService = bankAccountService
+    }
 
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
                 TransactionsStoryFilterCard()
                 TransactionsStoryOperationsHeader()
-                TransactionsStoryOperationsList()
+                TransactionsStoryOperationsList { trx in
+                    editingTransaction = trx
+                }
             }
             .padding(.horizontal)
             .padding(.bottom)
@@ -27,6 +41,7 @@ struct TransactionsStoryView: View {
                     .background(Color.black.opacity(0.001))
                     .allowsHitTesting(false)
             }
+
             if let error = viewModel.error {
                 Text("error.title".localized + ": \(error.localizedDescription)")
                     .multilineTextAlignment(.center)
@@ -37,6 +52,17 @@ struct TransactionsStoryView: View {
         }
         .sheet(isPresented: $showAnalysis) {
             AnalysisView(viewModel: viewModel)
+        }
+        .fullScreenCover(item: $editingTransaction) { trx in
+            TransactionFormView(
+                mode: .edit,
+                transaction: trx,
+                direction: viewModel.direction,
+                transactionsService: viewModel.transactionsService,
+                bankAccountService: bankAccountService,
+                categoriesService: categoriesService
+            )
+            .environmentObject(viewModel)
         }
         .navigationTitle("title.myHistory".localized)
         .navigationBarTitleDisplayMode(.large)

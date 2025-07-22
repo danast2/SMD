@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TransactionsStoryOperationsList: View {
     @EnvironmentObject var viewModel: TransactionsStoryViewModel
+    let onSelect: (Transaction) -> Void
 
     var body: some View {
         List {
@@ -16,7 +17,8 @@ struct TransactionsStoryOperationsList: View {
                     id: \.element.id) { index, transaction in
                 TransactionRowView(
                     transaction: transaction,
-                    direction: viewModel.direction, onTap: nil
+                    direction: viewModel.direction,
+                    onTap: { onSelect(transaction) }
                 )
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(

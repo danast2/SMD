@@ -45,7 +45,11 @@ struct TransactionsListView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                TransactionsListToolbar(direction: viewModel.direction)
+                TransactionsListToolbar(
+                    direction: viewModel.direction,
+                    categoriesService: categoriesService,
+                    bankAccountService: bankAccountService
+                )
             }
             .alert("Ошибка", isPresented:
                     .constant(viewModel.error != nil),
