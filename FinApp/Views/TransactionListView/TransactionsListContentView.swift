@@ -14,8 +14,7 @@ struct TransactionsListContentView: View {
     var body: some View {
         Group {
             if viewModel.isLoading {
-                ProgressView()
-                    .frame(maxHeight: .infinity)
+                EmptyView()
             } else if let error = viewModel.error {
                 Text("error.title".localized + ": \(error.localizedDescription)")
                     .multilineTextAlignment(.center)

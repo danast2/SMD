@@ -21,7 +21,7 @@ struct AccountTabView: View {
                         Text(error.localizedDescription)
                             .foregroundColor(.red)
                     default:
-                        ProgressView()
+                        EmptyView()
                     }
                 }
                 .padding(.vertical)
