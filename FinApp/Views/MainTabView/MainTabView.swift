@@ -128,7 +128,7 @@ struct MainTabView: View {
         }
         .onReceive(
             NetworkActivity.counter
-                .receive(on: DispatchQueue.main)  
+                .receive(on: DispatchQueue.main)
         ) { activeRequests = $0 }
         .tint(Color("NewAccentColor"))
     }
