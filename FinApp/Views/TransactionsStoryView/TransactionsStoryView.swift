@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TransactionsStoryView: View {
-    @EnvironmentObject var viewModel: TransactionsStoryViewModel
+    @EnvironmentObject private var viewModel: TransactionsStoryViewModel
     @State private var showAnalysis = false
     @State private var editingTransaction: Transaction?
 
@@ -34,13 +34,6 @@ struct TransactionsStoryView: View {
             }
             .padding(.horizontal)
             .padding(.bottom)
-
-            if viewModel.isLoading {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.black.opacity(0.001))
-                    .allowsHitTesting(false)
-            }
 
             if let error = viewModel.error {
                 Text("error.title".localized + ": \(error.localizedDescription)")
@@ -75,6 +68,7 @@ struct TransactionsStoryView: View {
             }
         }
         .background(Color(.systemGray6).ignoresSafeArea())
+        .loading(viewModel.isLoading)
         .onAppear {
             Task { await viewModel.reloadData() }
         }
