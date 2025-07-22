@@ -40,7 +40,9 @@ struct ItemsTabView: View {
             .background(Color(.systemGray6).ignoresSafeArea())
         }
         .loading(viewModel.isLoading)
-        .alert("Ошибка", isPresented: .constant(viewModel.error != nil), presenting: viewModel.error) { _ in
+        .alert("Ошибка", isPresented:
+                .constant(viewModel.error != nil),
+               presenting: viewModel.error) { _ in
             Button("OK", role: .cancel) { }
         } message: { error in
             Text(error.localizedDescription)

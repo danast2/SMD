@@ -35,7 +35,10 @@ struct AccountTabView: View {
             .task {
                 viewModel.reload()
             }
-            .alert("Ошибка", isPresented: .constant(viewModel.error != nil), presenting: viewModel.error) { _ in
+            .alert("Ошибка",
+                   isPresented:
+                    .constant(viewModel.error != nil),
+                   presenting: viewModel.error) { _ in
                 Button("OK", role: .cancel) { }
             } message: { error in
                 Text(error.localizedDescription)
