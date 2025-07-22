@@ -149,8 +149,6 @@ final class TransactionsServiceImpl: @preconcurrency TransactionsServiceProtocol
         }
     }
 
-    // MARK: - Helpers
-
     private func signedAmount(for transaction: Transaction) -> Decimal {
         transaction.category.direction == .income ? transaction.amount : -transaction.amount
     }
@@ -240,8 +238,6 @@ final class TransactionsServiceImpl: @preconcurrency TransactionsServiceProtocol
             }
         }
     }
-
-    // MARK: - Network wrappers
 
     private func sendCreate(_ trx: Transaction) async throws {
         try await networkClient.request(

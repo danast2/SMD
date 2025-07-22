@@ -24,7 +24,7 @@ class TransactionsStoryViewModel: ObservableObject {
     @Published var selectedSortOption: SortOption = .byDate
 
     let direction: Direction
-    private let transactionsService: any TransactionsServiceProtocol
+    let transactionsService: any TransactionsServiceProtocol
 
     var sortedTransactions: [Transaction] {
         transactions.sorted {
