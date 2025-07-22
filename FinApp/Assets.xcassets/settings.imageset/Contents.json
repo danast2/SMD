@@ -1,8 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Property 1=Настройки, Property 2=Active.pdf",
-      "idiom" : "universal"
+      "filename" : "settings.pdf",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {

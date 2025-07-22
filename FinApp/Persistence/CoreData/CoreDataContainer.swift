@@ -10,16 +10,16 @@ import CoreData
 
 enum CoreDataContainer {
 
-    /// Создаёт и загружает `NSPersistentContainer`.
-    /// - Parameter inMemory: true для юнит‑тестов; в проде передавать `false`.
     static func make(inMemory: Bool = false) throws -> NSPersistentContainer {
-        // Ищем модель «StorageModel» в основном бандле
         guard
             let modelURL = Bundle.main.url(forResource: "StorageModel", withExtension: "momd"),
             let model    = NSManagedObjectModel(contentsOf: modelURL)
-        else { throw NSError(domain: "CoreData", code: 1, userInfo: [NSLocalizedDescriptionKey: "Model not found"]) }
+        else { throw NSError(domain: "CoreData",
+                             code: 1,
+                             userInfo: [NSLocalizedDescriptionKey: "Model not found"]) }
 
-        let container = NSPersistentContainer(name: "StorageModel", managedObjectModel: model)
+        let container = NSPersistentContainer(name:
+                                                "StorageModel", managedObjectModel: model)
 
         if inMemory {
             let store = NSPersistentStoreDescription()

@@ -12,8 +12,6 @@ final class TransactionTests: XCTestCase {
 
     private let isoFormatter = ISO8601DateFormatter()
 
-    // MARK: - Test Data Setup
-
     func makeSampleTransaction(
         id: Int = 42,
         account: FinApp.AccountBrief? = nil,
@@ -68,8 +66,6 @@ final class TransactionTests: XCTestCase {
         )
     }
 
-    // MARK: - JSON Object Tests
-
     func testJSONObjectValues() {
         let transaction = makeSampleTransaction()
         let json = transaction.jsonObject
@@ -79,7 +75,6 @@ final class TransactionTests: XCTestCase {
             return
         }
 
-        // Проверяем account
         if let accountDict = dict["account"] as? [String: Any] {
             XCTAssertEqual(accountDict["name"] as? String, transaction.account.name)
             XCTAssertEqual(accountDict["balance"] as? String,
@@ -89,7 +84,6 @@ final class TransactionTests: XCTestCase {
             XCTFail("Отсутствует account")
         }
 
-        // Проверяем category
         if let categoryDict = dict["category"] as? [String: Any] {
             XCTAssertEqual(categoryDict["id"] as? Int, transaction.category.id)
             XCTAssertEqual(categoryDict["name"] as? String, transaction.category.name)
@@ -114,8 +108,6 @@ final class TransactionTests: XCTestCase {
         XCTAssertNil(dict["comment"],
                      "comment должен быть nil")
     }
-
-    // MARK: - Parsing Tests
 
     func testParseValidTransaction() {
         let transaction = makeSampleTransaction()
@@ -170,8 +162,6 @@ final class TransactionTests: XCTestCase {
                          "Не совпадает amount для строки \(amountString)")
         }
     }
-
-    // MARK: - Round Trip Testing
 
     func testJSONObjectParseRoundTrip() {
         let original = makeSampleTransaction()

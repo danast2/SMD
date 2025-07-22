@@ -47,7 +47,9 @@ struct TransactionsListView: View {
             .toolbar {
                 TransactionsListToolbar(direction: viewModel.direction)
             }
-            .alert("Ошибка", isPresented: .constant(viewModel.error != nil), presenting: viewModel.error) { _ in
+            .alert("Ошибка", isPresented:
+                    .constant(viewModel.error != nil),
+                   presenting: viewModel.error) { _ in
                 Button("OK", role: .cancel) { }
             } message: { error in
                 Text(error.localizedDescription)
