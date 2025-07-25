@@ -9,6 +9,12 @@ import Foundation
 import SwiftUI
 import Combine
 
+struct AccountTransaction: Identifiable {
+    let id: UUID
+    let date: Date
+    let amount: Decimal
+}
+
 @MainActor
 final class BankAccountViewModel: ObservableObject {
 
@@ -19,14 +25,22 @@ final class BankAccountViewModel: ObservableObject {
     @Published var selectedCurrency: String = Currency.rub.rawValue
     @Published var error: Error?
     @Published var isLoading = false
+    @Published var transactions: [AccountTransaction] = []
 
     let didLoad = PassthroughSubject<Void, Never>()
 
-    private let service: any BankAccountServiceProtocol
+    private let accountService: any BankAccountServiceProtocol
+    private let transactionsService: any TransactionsServiceProtocol
     private var bag = Set<AnyCancellable>()
+    private let calendar = Calendar.current
 
-    init(service: any BankAccountServiceProtocol) {
-        self.service = service
+    init(
+        accountService: any BankAccountServiceProtocol,
+        transactionsService: any TransactionsServiceProtocol
+    ) {
+        self.accountService       = accountService
+        self.transactionsService  = transactionsService
+
         Task { await loadAccount() }
 
         NotificationCenter.default.addObserver(
@@ -51,9 +65,7 @@ final class BankAccountViewModel: ObservableObject {
         }
     }
 
-    func reload() {
-        Task { await loadAccount() }
-    }
+    func reload() { Task { await loadAccount() } }
 
     func toggleEditMode() {
         if isEditing {
@@ -68,12 +80,64 @@ final class BankAccountViewModel: ObservableObject {
         isLoading = true
         defer { isLoading = false }
         do {
-            account = try await service.fetchAccount()
+            account = try await accountService.fetchAccount()
             selectedCurrency = account?.currency ?? Currency.rub.rawValue
+
+            let now = Date()
+            let startDate = calendar.date(byAdding: .month, value: -24, to: now) ?? now
+            let endDate   = calendar.date(byAdding: .day, value: 1, to: now) ?? now
+
+            let rawTransactions = try await transactionsService.fetchTransactions(
+                from: startDate,
+                to: endDate
+            )
+
+            transactions = rawTransactions.map {
+                AccountTransaction(
+                    id: UUID(),
+                    date: $0.transactionDate,
+                    amount: $0.category.direction == .income ? $0.amount : -$0.amount
+                )
+            }
+
             didLoad.send()
         } catch {
             self.error = error
         }
+    }
+
+    func balances(for period: ChartPeriod) -> [DateBalance] {
+        guard !transactions.isEmpty else { return [] }
+        var result: [DateBalance] = []
+        let now = Date()
+        let count = period.length
+        for index in 0..<count {
+            guard let anchorDate = calendar.date(
+                byAdding: period.calendarComponent,
+                value: -(count - 1 - index),
+                to: now
+            ) else { continue }
+
+            switch period {
+            case .day:
+                let startDate = calendar.startOfDay(for: anchorDate)
+                guard let endDate = calendar.date(byAdding: .day, value: 1, to: startDate)
+                else { continue }
+                let dailySum = transactions
+                    .filter { $0.date >= startDate && $0.date < endDate }
+                    .reduce(Decimal.zero) { $0 + $1.amount }
+                result.append(DateBalance(date: startDate, amount: dailySum))
+
+            case .month:
+                guard let interval = calendar.dateInterval(of: .month, for: anchorDate)
+                else { continue }
+                let monthlySum = transactions
+                    .filter { $0.date >= interval.start && $0.date < interval.end }
+                    .reduce(Decimal.zero) { $0 + $1.amount }
+                result.append(DateBalance(date: interval.start, amount: monthlySum))
+            }
+        }
+        return result
     }
 
     private func saveChanges() {
@@ -101,7 +165,7 @@ final class BankAccountViewModel: ObservableObject {
 
         Task {
             do {
-                try await service.updateAccount(updated)
+                try await accountService.updateAccount(updated)
                 await loadAccount()
                 isEditing = false
             } catch {

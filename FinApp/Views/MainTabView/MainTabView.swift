@@ -14,7 +14,7 @@ struct MainTabView: View {
     private let networkClient: NetworkClient
     private let categoriesService: any CategoriesServiceProtocol
     private let bankAccountService: any BankAccountServiceProtocol
-    private let transactionsService: TransactionsServiceImpl
+    private let transactionsService: any TransactionsServiceProtocol
 
     @State private var selectedTab: TabType = .expenses
     @State private var activeRequests = 0
@@ -53,15 +53,19 @@ struct MainTabView: View {
             localStorage: accountsStorage,
             backupStorage: accountBackup
         )
-        let accountVMInstance = BankAccountViewModel(service: accService)
 
+        var accountVMInstance: BankAccountViewModel!
         let trxService = TransactionsServiceImpl(
             networkClient: client,
-            accountIdProvider: { accountVMInstance.account?.id },
+            accountIdProvider: { accountVMInstance?.account?.id },
             localStorage: transactionsStorage,
             backupStorage: transactionsBackup,
             accountsLocalStorage: accountsStorage,
             accountBackupStorage: accountBackup
+        )
+        accountVMInstance = BankAccountViewModel(
+            accountService: accService,
+            transactionsService: trxService
         )
 
         self.categoriesService   = catService

@@ -7,6 +7,7 @@
 
 import UIKit
 import Combine
+import PieChart
 
 final class AnalysisViewController: UIViewController {
 
@@ -64,6 +65,12 @@ final class AnalysisViewController: UIViewController {
         label.textAlignment = .right
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
+    }()
+
+    private let pieChartView: PieChartView = {
+        let view = PieChartView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
     }()
 
     private lazy var sortControl: UISegmentedControl = {
@@ -144,6 +151,8 @@ final class AnalysisViewController: UIViewController {
          sumLabel, sumValueLabel]
             .forEach { infoCardView.addSubview($0) }
 
+        infoCardView.addSubview(pieChartView)
+
         let pad: CGFloat = 16
 
         NSLayoutConstraint.activate([
@@ -185,8 +194,6 @@ final class AnalysisViewController: UIViewController {
             sumLabel.leadingAnchor.constraint(equalTo: startLabel.leadingAnchor),
             sumValueLabel.centerYAnchor.constraint(equalTo: sumLabel.centerYAnchor),
             sumValueLabel.trailingAnchor.constraint(equalTo: startDatePicker.trailingAnchor),
-            sumLabel.bottomAnchor.constraint(equalTo: infoCardView.bottomAnchor, constant: -pad),
-
             sortControl.topAnchor.constraint(equalTo: infoCardView.bottomAnchor, constant: pad),
             sortControl.leadingAnchor.constraint(equalTo: headerLabel.leadingAnchor),
             sortControl.trailingAnchor.constraint(equalTo: headerLabel.trailingAnchor),
@@ -205,7 +212,16 @@ final class AnalysisViewController: UIViewController {
 
             errorLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: pad),
             errorLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -pad),
-            errorLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            errorLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+
+            pieChartView.topAnchor.constraint(equalTo: sumLabel.bottomAnchor, constant: 12),
+            pieChartView.leadingAnchor.constraint(equalTo:
+                                                    infoCardView.leadingAnchor, constant: 16),
+            pieChartView.trailingAnchor.constraint(equalTo:
+                                                    infoCardView.trailingAnchor, constant: -16),
+            pieChartView.heightAnchor.constraint(equalToConstant: 200),
+            pieChartView.bottomAnchor.constraint(equalTo: infoCardView.bottomAnchor, constant: -16)
+
         ])
     }
 
@@ -257,6 +273,23 @@ final class AnalysisViewController: UIViewController {
                 self?.errorLabel.text = error.map {
                     "error.title".localized + ": " + $0.localizedDescription }
                 self?.errorLabel.isHidden = (error == nil)
+            }
+            .store(in: &cancellables)
+
+        viewModel.$transactions
+            .receive(on: RunLoop.main)
+            .sink { [weak self] txns in
+                guard let self else { return }
+
+                let grouped = Dictionary(grouping: txns, by: { $0.category.name })
+                    .map { label, group in
+                        Entity(
+                            value: group.reduce(0) { $0 + $1.amount },
+                            label: label
+                        )
+                    }
+
+                pieChartView.entities = grouped.sorted { $0.value > $1.value }
             }
             .store(in: &cancellables)
     }

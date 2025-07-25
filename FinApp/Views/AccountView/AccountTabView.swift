@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AccountTabView: View {
     @EnvironmentObject private var viewModel: BankAccountViewModel
+    @State private var chartPeriod: ChartPeriod = .day
 
     var body: some View {
         NavigationView {
@@ -29,16 +30,13 @@ struct AccountTabView: View {
             .scrollDismissesKeyboard(.interactively)
             .navigationTitle("title.myAccount".localized)
             .toolbar { editToolbar }
-            .refreshable {
-                viewModel.reload()
-            }
-            .task {
-                viewModel.reload()
-            }
-            .alert("Ошибка",
-                   isPresented:
-                    .constant(viewModel.error != nil),
-                   presenting: viewModel.error) { _ in
+            .refreshable { viewModel.reload() }
+            .task { viewModel.reload() }
+            .alert(
+                "Ошибка",
+                isPresented: .constant(viewModel.error != nil),
+                presenting: viewModel.error
+            ) { _ in
                 Button("OK", role: .cancel) { }
             } message: { error in
                 Text(error.localizedDescription)
@@ -67,6 +65,20 @@ struct AccountTabView: View {
                     isHidden: viewModel.isBalanceHidden
                 )
                 CurrencyCardView(currencyCode: account.currency)
+
+                VStack(spacing: 8) {
+                    Picker("", selection: $chartPeriod) {
+                        ForEach(ChartPeriod.allCases) { period in
+                            Text(period.title).tag(period)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    BalanceChartView(period: chartPeriod)
+                        .environmentObject(viewModel)
+                        .frame(height: 240)
+                        .animation(.easeInOut(duration: 0.35), value: chartPeriod)
+                }
             }
         }
         .padding(.horizontal)
@@ -75,12 +87,8 @@ struct AccountTabView: View {
     private var editToolbar: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
             Button(action: { viewModel.toggleEditMode() }) {
-                Text(
-                    viewModel.isEditing
-                    ? "title.save".localized
-                    : "title.edit".localized
-                )
-                .foregroundColor(.indigo)
+                Text(viewModel.isEditing ? "title.save".localized : "title.edit".localized)
+                    .foregroundColor(.indigo)
             }
         }
     }

@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		30EE4EB52E33E655009F9B54 /* PieChart in Frameworks */ = {isa = PBXBuildFile; productRef = 30EE4EB42E33E655009F9B54 /* PieChart */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		306400E22DFADC1B00D7FB13 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -39,6 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30EE4EB52E33E655009F9B54 /* PieChart in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +96,7 @@
 			);
 			name = FinApp;
 			packageProductDependencies = (
+				30EE4EB42E33E655009F9B54 /* PieChart */,
 			);
 			productName = FinApp;
 			productReference = 303F9AB12DF36B7B00E2DB56 /* FinApp.app */;
@@ -148,6 +154,9 @@
 			);
 			mainGroup = 303F9AA82DF36B7B00E2DB56;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				30EE4EB32E33E655009F9B54 /* XCLocalSwiftPackageReference "Utilities" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 303F9AB22DF36B7B00E2DB56 /* Products */;
 			projectDirPath = "";
@@ -470,6 +479,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		30EE4EB32E33E655009F9B54 /* XCLocalSwiftPackageReference "Utilities" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Utilities;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		30EE4EB42E33E655009F9B54 /* PieChart */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PieChart;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 303F9AA92DF36B7B00E2DB56 /* Project object */;
 }
